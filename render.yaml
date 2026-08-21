@@ -1,0 +1,28 @@
+services:
+  # RideTribe Backend Web Service
+  - type: web
+    name: ridetribe-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    dockerContext: backend
+    plan: free
+    region: singapore
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: ridetribe-postgres
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 8080
+
+databases:
+  # Managed PostgreSQL database on Render
+  - name: ridetribe-postgres
+    plan: free
+    region: singapore
+    databaseName: ridetribedb
+    user: ridetribe_user
