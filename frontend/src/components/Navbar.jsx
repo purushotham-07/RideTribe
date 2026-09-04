@@ -16,23 +16,23 @@ export default function Navbar({ activeTab, setActiveTab, onOpenHostTrip, onOpen
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6">
         <div className="flex items-center justify-between h-14">
           
           {/* Left: Brand & Desktop Nav Links */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-3 sm:space-x-6 min-w-0">
             <button
               onClick={() => handleNav('explore-trips')}
-              className="flex items-center space-x-2.5 focus:outline-none group"
+              className="flex items-center space-x-2 sm:space-x-2.5 focus:outline-none group shrink-0"
             >
-              <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center font-bold text-xs shadow-xs transition-transform group-hover:scale-105">
+              <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center font-bold text-xs shadow-xs transition-transform group-hover:scale-105 shrink-0">
                 <Bike className="w-4 h-4 stroke-[2.2]" />
               </div>
               <div className="flex items-center space-x-1.5">
-                <span className="font-bold text-sm tracking-tight text-foreground">
+                <span className="font-bold text-sm tracking-tight text-foreground whitespace-nowrap">
                   RideTribe
                 </span>
-                <span className="text-[10px] uppercase font-mono font-medium px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground border border-border">
+                <span className="text-[10px] uppercase font-mono font-medium px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground border border-border shrink-0">
                   BLR
                 </span>
               </div>
@@ -75,7 +75,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenHostTrip, onOpen
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
+          <div className="flex items-center space-x-1.5 sm:space-x-2.5 shrink-0">
             
             {/* Search Bar Widget (Desktop) */}
             <button
@@ -94,17 +94,17 @@ export default function Navbar({ activeTab, setActiveTab, onOpenHostTrip, onOpen
             {/* High-Contrast Primary CTA: + Host Ride */}
             <button
               onClick={onOpenHostTrip}
-              className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-foreground text-background hover:opacity-90 active:scale-95 shadow-sm transition-all whitespace-nowrap"
+              className="inline-flex items-center space-x-1 sm:space-x-1.5 px-2.5 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold bg-foreground text-background hover:opacity-90 active:scale-95 shadow-sm transition-all whitespace-nowrap shrink-0"
             >
               <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span className="hidden xs:inline sm:inline">Host Ride</span>
-              <span className="inline xs:hidden sm:hidden">Host</span>
+              <span className="hidden sm:inline">Host Ride</span>
+              <span className="inline sm:hidden">Host</span>
             </button>
 
             {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="w-8 h-8 rounded-full border border-border bg-background hover:bg-secondary text-foreground flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-full border border-border bg-background hover:bg-secondary text-foreground flex items-center justify-center transition-colors shrink-0"
               title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
               aria-label="Toggle Theme"
             >
@@ -117,7 +117,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenHostTrip, onOpen
 
             {/* User Profile & Auth */}
             {user ? (
-              <div className="flex items-center space-x-1.5 pl-1.5 border-l border-border">
+              <div className="flex items-center space-x-1 sm:space-x-1.5 pl-1 sm:pl-1.5 border-l border-border shrink-0">
                 <button
                   onClick={() => handleNav('profile')}
                   className={`relative p-0.5 rounded-full transition-all ${
@@ -148,11 +148,11 @@ export default function Navbar({ activeTab, setActiveTab, onOpenHostTrip, onOpen
                 </button>
               </div>
             ) : (
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center shrink-0">
                 <GoogleLoginButton
+                  variant="navbar"
                   onSuccess={() => handleNav('explore-trips')}
                   onRequireOnboarding={() => handleNav('onboarding')}
-                  className="!py-1.5 !pl-1.5 !pr-3 text-[11px]"
                 />
               </div>
             )}
@@ -160,7 +160,7 @@ export default function Navbar({ activeTab, setActiveTab, onOpenHostTrip, onOpen
             {/* Mobile Menu Hamburger */}
             <button
               onClick={() => setMobileMenuOpen(prev => !prev)}
-              className="md:hidden w-8 h-8 rounded-full border border-border bg-background hover:bg-secondary text-foreground flex items-center justify-center transition-colors"
+              className="md:hidden w-8 h-8 rounded-full border border-border bg-background hover:bg-secondary text-foreground flex items-center justify-center transition-colors shrink-0"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
@@ -204,17 +204,38 @@ export default function Navbar({ activeTab, setActiveTab, onOpenHostTrip, onOpen
               Match Pool Simulator
             </button>
 
-            {user && (
-              <button
-                onClick={() => handleNav('profile')}
-                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
-                  activeTab === 'profile'
-                    ? 'bg-secondary text-foreground font-semibold'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
-                }`}
-              >
-                My Profile & Garage
-              </button>
+            {user ? (
+              <>
+                <button
+                  onClick={() => handleNav('profile')}
+                  className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                    activeTab === 'profile'
+                      ? 'bg-secondary text-foreground font-semibold'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                  }`}
+                >
+                  My Profile & Garage
+                </button>
+                <button
+                  onClick={() => {
+                    logout();
+                    setMobileMenuOpen(false);
+                    handleNav('auth');
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors flex items-center space-x-2"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Sign Out ({user.name})</span>
+                </button>
+              </>
+            ) : (
+              <div className="pt-2.5 pb-1 border-t border-border mt-2">
+                <GoogleLoginButton
+                  onSuccess={() => handleNav('explore-trips')}
+                  onRequireOnboarding={() => handleNav('onboarding')}
+                  fullWidth={true}
+                />
+              </div>
             )}
           </div>
         )}
