@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { api } from '../api/client';
 import { useToast } from '../context/ToastContext';
 import MeetingPinMapPicker from './MeetingPinMapPicker';
-import { X, Bike, Car, Calendar, Clock, Users, Shield, MapPin, Sparkles, Check, ArrowRight, Package, Compass } from 'lucide-react';
+import { X, Bike, Car, Calendar, Clock, Users, Shield, MapPin, Sparkles, Check, ArrowRight, Package, Compass, Upload, Camera, Trash2 } from 'lucide-react';
 
 const POPULAR_SUGGESTIONS = [
   { name: "Nandi Hills", distanceKm: 60, image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80" },
@@ -65,6 +65,31 @@ export default function HostTripModal({ isOpen, onClose, onTripCreated }) {
     lng: 77.5912
   });
   const [loading, setLoading] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Photo size should be less than 10MB.");
+      return;
+    }
+
+    setUploadingPhoto(true);
+    try {
+      const res = await api.uploadImage(file, 'ridetribe/trips');
+      if (res?.url) {
+        setCustomCoverUrl(res.url);
+        toast.success("Cover photo uploaded from device!");
+      }
+    } catch (err) {
+      toast.error("Upload error: " + err.message);
+    } finally {
+      setUploadingPhoto(false);
+      e.target.value = '';
+    }
+  };
 
   const handleSuggestionClick = (sug) => {
     setDestination(sug.name);
@@ -319,16 +344,87 @@ export default function HostTripModal({ isOpen, onClose, onTripCreated }) {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400 mb-1.5">
-                Photo URL
-              </label>
-              <input
-                type="url"
-                value={customCoverUrl}
-                onChange={(e) => setCustomCoverUrl(e.target.value)}
-                placeholder="https://... cover photo"
-                className="w-full px-3 py-2 text-xs bg-zinc-50 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-xl text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-900 dark:focus:ring-zinc-100"
-              />
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-600 dark:text-zinc-400">
+                  Cover Photo
+                </label>
+                {customCoverUrl && (
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">✓ Selected</span>
+                )}
+              </div>
+
+              {customCoverUrl ? (
+                <div className="rounded-xl border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/90 p-1.5 flex items-center space-x-2">
+                  <img
+                    src={customCoverUrl}
+                    alt="Cover preview"
+                    className="w-10 h-8 rounded-lg object-cover shrink-0 border border-zinc-200 dark:border-zinc-700 shadow-xs"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[11px] font-medium text-zinc-800 dark:text-zinc-200 truncate">
+                      Photo ready
+                    </p>
+                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500 truncate">
+                      {customCoverUrl.startsWith('data:') ? 'Uploaded from device' : customCoverUrl}
+                    </p>
+                  </div>
+                  <div className="flex items-center space-x-1 shrink-0">
+                    <label
+                      className="p-1.5 rounded-lg text-zinc-600 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 cursor-pointer transition-colors"
+                      title="Change photo from device"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handlePhotoUpload}
+                        className="hidden"
+                        disabled={uploadingPhoto}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setCustomCoverUrl('')}
+                      className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+                      title="Remove photo"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <label className="flex items-center justify-center space-x-2 w-full py-2 px-3 text-xs bg-zinc-50 hover:bg-zinc-100 dark:bg-zinc-900/90 dark:hover:bg-zinc-800 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl cursor-pointer transition-all text-zinc-700 dark:text-zinc-300 font-medium">
+                  {uploadingPhoto ? (
+                    <>
+                      <div className="w-3.5 h-3.5 border-2 border-[#f04f23] border-t-transparent rounded-full animate-spin"></div>
+                      <span className="text-zinc-500 text-[11px]">Uploading...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-3.5 h-3.5 text-[#f04f23]" />
+                      <span className="text-[11px]">Upload from Device</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                    disabled={uploadingPhoto}
+                  />
+                </label>
+              )}
+
+              {/* Optional URL input fallback */}
+              <div className="mt-1">
+                <input
+                  type="url"
+                  value={customCoverUrl}
+                  onChange={(e) => setCustomCoverUrl(e.target.value)}
+                  placeholder="or paste image URL..."
+                  className="w-full px-2 py-1 text-[10px] bg-transparent border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-600 dark:text-zinc-400 placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-1 focus:ring-zinc-400"
+                />
+              </div>
             </div>
           </div>
 
