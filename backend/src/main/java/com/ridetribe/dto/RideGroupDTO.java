@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Builder
 public class RideGroupDTO {
-    private Long id;
+    private String id;
     private String destination;
     private TravelMode travelMode;
     private LocalDate rideDate;

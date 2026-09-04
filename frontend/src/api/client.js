@@ -40,6 +40,17 @@ export const api = {
   getMe: () => apiRequest('/api/auth/me'),
   updateProfile: (data) => apiRequest('/api/auth/profile', { method: 'PUT', body: JSON.stringify(data) }),
 
+  // Community Trips & Join Requests
+  getTrips: () => apiRequest('/api/trips'),
+  getTrip: (id) => apiRequest(`/api/trips/${id}`),
+  createTrip: (data) => apiRequest('/api/trips', { method: 'POST', body: JSON.stringify(data) }),
+  sendJoinRequest: (tripId, data) => apiRequest(`/api/trips/${tripId}/join-requests`, { method: 'POST', body: JSON.stringify(data || {}) }),
+  getTripJoinRequests: (tripId) => apiRequest(`/api/trips/${tripId}/join-requests`),
+  respondJoinRequest: (tripId, requestId, data) => apiRequest(`/api/trips/${tripId}/join-requests/${requestId}`, { method: 'PATCH', body: JSON.stringify(data) }),
+  getTripChat: (tripId) => apiRequest(`/api/trips/${tripId}/chat`),
+  sendTripChat: (tripId, content) => apiRequest(`/api/trips/${tripId}/chat`, { method: 'POST', body: JSON.stringify({ content }) }),
+  deleteTrip: (tripId) => apiRequest(`/api/trips/${tripId}`, { method: 'DELETE' }),
+
   // Ride Intents
   createIntent: (data) => apiRequest('/api/ride-intents', { method: 'POST', body: JSON.stringify(data) }),
   getMyIntents: () => apiRequest('/api/ride-intents/me'),

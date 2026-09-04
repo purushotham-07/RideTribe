@@ -12,16 +12,20 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       const savedToken = localStorage.getItem('ridetribe_token');
-      if (savedToken) {
+      if (savedToken && savedToken !== 'null' && savedToken !== 'undefined') {
         try {
           const userData = await api.getMe();
           setUser(userData);
-        } catch (err) {
-          console.warn("Session expired. Clearing token.", err);
+        } catch (_) {
+          // Token expired or invalid -> clean up gracefully
           localStorage.removeItem('ridetribe_token');
           setToken(null);
           setUser(null);
         }
+      } else {
+        localStorage.removeItem('ridetribe_token');
+        setToken(null);
+        setUser(null);
       }
       setLoading(false);
     };
@@ -70,8 +74,8 @@ export const AuthProvider = ({ children }) => {
       const userData = await api.getMe();
       setUser(userData);
       return userData;
-    } catch (err) {
-      console.error("Failed to refresh user:", err);
+    } catch (_) {
+      // Ignored
     }
   };
 

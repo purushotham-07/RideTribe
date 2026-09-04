@@ -23,7 +23,7 @@ public class LiveTelemetryController {
      */
     @MessageMapping("/ride-groups/{groupId}/location")
     public void handleWebSocketLocation(
-            @DestinationVariable("groupId") Long groupId,
+            @DestinationVariable("groupId") String groupId,
             @Payload LocationUpdateDTO update) {
         update.setRideGroupId(groupId);
         liveTelemetryService.processLocationUpdate(update);
@@ -34,7 +34,7 @@ public class LiveTelemetryController {
      */
     @PostMapping("/api/live/ride-groups/{groupId}/location")
     public ResponseEntity<GroupLocationsDTO> postLocationUpdate(
-            @PathVariable("groupId") Long groupId,
+            @PathVariable("groupId") String groupId,
             @RequestBody LocationUpdateDTO update) {
         update.setRideGroupId(groupId);
         GroupLocationsDTO groupLocs = liveTelemetryService.processLocationUpdate(update);
@@ -45,7 +45,7 @@ public class LiveTelemetryController {
      * REST Endpoint to get current cached locations for a group
      */
     @GetMapping("/api/live/ride-groups/{groupId}/locations")
-    public ResponseEntity<GroupLocationsDTO> getGroupLocations(@PathVariable("groupId") Long groupId) {
+    public ResponseEntity<GroupLocationsDTO> getGroupLocations(@PathVariable("groupId") String groupId) {
         return ResponseEntity.ok(liveTelemetryService.getLatestGroupLocations(groupId));
     }
 }

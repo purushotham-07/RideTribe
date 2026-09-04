@@ -82,10 +82,10 @@ export default function AuthPage({ onSuccess, onRequireOnboarding }) {
       
       {/* Title */}
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+        <h1 className="text-2xl font-bold text-foreground">
           {isRegister ? 'Create Rider Profile' : 'Sign in to RideTribe'}
         </h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+        <p className="text-xs text-muted-foreground mt-1">
           {isRegister
             ? 'Add your vehicle details & profile photo for Bangalore weekend matching'
             : 'Access your matched ride groups and live highway convoys'}
@@ -93,7 +93,7 @@ export default function AuthPage({ onSuccess, onRequireOnboarding }) {
       </div>
 
       {/* Main Card */}
-      <div className="bg-white dark:bg-[#111726] border border-slate-200 dark:border-slate-800 rounded-2xl p-5 sm:p-6 shadow-sm space-y-4">
+      <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 shadow-subtle space-y-4">
         
         {/* Real Google OAuth Account Chooser Button */}
         <GoogleLoginButton
@@ -103,20 +103,20 @@ export default function AuthPage({ onSuccess, onRequireOnboarding }) {
         />
 
         <div className="relative flex py-1 items-center">
-          <div className="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
-          <span className="flex-shrink mx-3 text-[11px] text-slate-400 font-medium">or email credentials</span>
-          <div className="flex-grow border-t border-slate-200 dark:border-slate-800"></div>
+          <div className="flex-grow border-t border-border"></div>
+          <span className="flex-shrink mx-3 text-[11px] text-muted-foreground font-medium">or email credentials</span>
+          <div className="flex-grow border-t border-border"></div>
         </div>
 
         {/* Toggle Sign In / Register */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800">
+        <div className="flex border-b border-border">
           <button
             type="button"
             onClick={() => { setIsRegister(false); setError(null); }}
             className={`flex-1 pb-2.5 text-xs font-semibold border-b-2 transition-colors ${
               !isRegister
-                ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white'
-                : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+                ? 'border-signal text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Sign In
@@ -126,8 +126,8 @@ export default function AuthPage({ onSuccess, onRequireOnboarding }) {
             onClick={() => { setIsRegister(true); setError(null); }}
             className={`flex-1 pb-2.5 text-xs font-semibold border-b-2 transition-colors ${
               isRegister
-                ? 'border-slate-900 text-slate-900 dark:border-white dark:text-white'
-                : 'border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300'
+                ? 'border-signal text-foreground'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
             }`}
           >
             Register Profile
@@ -309,14 +309,14 @@ export default function AuthPage({ onSuccess, onRequireOnboarding }) {
                     value={formData.emergencyContactName}
                     onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })}
                     placeholder="Contact Name"
-                    className="w-full px-2.5 py-2 text-xs bg-white dark:bg-[#111726] border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                    className="w-full px-2.5 py-2 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
                   />
                   <input
                     type="tel"
                     value={formData.emergencyContactPhone}
                     onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })}
                     placeholder="Phone (+91...)"
-                    className="w-full px-2.5 py-2 text-xs bg-white dark:bg-[#111726] border border-slate-300 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white"
+                    className="w-full px-2.5 py-2 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
                   />
                 </div>
               </div>
@@ -326,14 +326,14 @@ export default function AuthPage({ onSuccess, onRequireOnboarding }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 py-3 px-4 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-black text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center space-x-2 min-h-[44px] shadow-sm"
+            className="w-full mt-2 py-3 px-4 rounded-full bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs font-semibold disabled:opacity-50 flex items-center justify-center space-x-2 min-h-[44px] shadow-sm transition-all active:scale-[0.99]"
           >
             {loading ? (
               <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
             ) : (
               <>
                 <span>{isRegister ? 'Complete Profile & Join' : 'Sign In'}</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
               </>
             )}
           </button>

@@ -18,7 +18,7 @@ public class RideGroupController {
     private final RideGroupService rideGroupService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<RideGroupDTO> getGroupById(@PathVariable("id") Long id) {
+    public ResponseEntity<RideGroupDTO> getGroupById(@PathVariable("id") String id) {
         return ResponseEntity.ok(rideGroupService.getGroupById(id));
     }
 
@@ -33,18 +33,18 @@ public class RideGroupController {
     }
 
     @PostMapping("/{id}/start")
-    public ResponseEntity<RideGroupDTO> startRide(@PathVariable("id") Long id) {
+    public ResponseEntity<RideGroupDTO> startRide(@PathVariable("id") String id) {
         return ResponseEntity.ok(rideGroupService.startRide(id));
     }
 
     @PostMapping("/{id}/complete")
-    public ResponseEntity<RideGroupDTO> completeRide(@PathVariable("id") Long id) {
+    public ResponseEntity<RideGroupDTO> completeRide(@PathVariable("id") String id) {
         return ResponseEntity.ok(rideGroupService.completeRide(id));
     }
 
     @PatchMapping("/{id}/members/status")
     public ResponseEntity<RideGroupDTO> updateMemberStatus(
-            @PathVariable("id") Long id,
+            @PathVariable("id") String id,
             @RequestBody UpdateMemberStatusRequest request) {
         return ResponseEntity.ok(rideGroupService.updateMemberStatus(id, request));
     }

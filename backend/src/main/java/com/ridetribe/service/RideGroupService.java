@@ -6,12 +6,10 @@ import com.ridetribe.model.RideGroup;
 import com.ridetribe.model.RideGroupMember;
 import com.ridetribe.model.RideGroupStatus;
 import com.ridetribe.model.User;
-import com.ridetribe.repository.RideGroupMemberRepository;
 import com.ridetribe.repository.RideGroupRepository;
 import com.ridetribe.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,11 +20,10 @@ import java.util.stream.Collectors;
 public class RideGroupService {
 
     private final RideGroupRepository rideGroupRepository;
-    private final RideGroupMemberRepository rideGroupMemberRepository;
     private final UserRepository userRepository;
     private final AuthService authService;
 
-    public RideGroupDTO getGroupById(Long groupId) {
+    public RideGroupDTO getGroupById(String groupId) {
         RideGroup group = rideGroupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Ride group not found: " + groupId));
         return RideGroupDTO.fromEntity(group);
@@ -47,8 +44,7 @@ public class RideGroupService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public RideGroupDTO startRide(Long groupId) {
+    public RideGroupDTO startRide(String groupId) {
         RideGroup group = rideGroupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Ride group not found: " + groupId));
 
@@ -58,8 +54,7 @@ public class RideGroupService {
         return RideGroupDTO.fromEntity(saved);
     }
 
-    @Transactional
-    public RideGroupDTO completeRide(Long groupId) {
+    public RideGroupDTO completeRide(String groupId) {
         RideGroup group = rideGroupRepository.findById(groupId)
                 .orElseThrow(() -> new RuntimeException("Ride group not found: " + groupId));
 
@@ -68,37 +63,36 @@ public class RideGroupService {
         RideGroup saved = rideGroupRepository.save(group);
 
         // Increment rides completed for all members
-        for (RideGroupMember member : group.getMembers()) {
-            User user = member.getUser();
-            user.setRidesCompleted((user.getRidesCompleted() == null ? 0 : user.getRidesCompleted()) + 1);
-            userRepository.save(user);
+        if (group.getMembers() != null) {
+            for (RideGroupMember member : group.getMembers()) {
+                if (member.getUser() != null && member.getUser().getId() != null) {
+                    userRepository.findById(member.getUser().getId()).ifPresent(user -> {
+                        user.setRidesCompleted((user.getRidesCompleted() == null ? 0 : user.getRidesCompleted()) + 1);
+                        userRepository.save(user);
+                    });
+                }
+            }
         }
 
         return RideGroupDTO.fromEntity(saved);
     }
 
-    @Transactional
-    public RideGroupDTO updateMemberStatus(Long groupId, UpdateMemberStatusRequest request) {
+    public RideGroupDTO updateMemberStatus(String groupId, UpdateMemberStatusRequest request) {
         User currentUser = authService.getCurrentAuthenticatedUser();
+        RideGroup group = rideGroupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Ride group not found: " + groupId));
 
-        RideGroupMember member = rideGroupMemberRepository.findByRideGroupIdAndUserId(groupId, currentUser.getId())
-                .orElseThrow(() -> new RuntimeException("User is not a member of ride group: " + groupId));
-
-        if (request.getOnMyWay() != null) {
-            member.setOnMyWay(request.getOnMyWay());
-        }
-        if (request.getIsLead() != null) {
-            member.setIsLead(request.getIsLead());
-        }
-        if (request.getCurrentLat() != null && request.getCurrentLng() != null) {
-            member.setCurrentLat(request.getCurrentLat());
-            member.setCurrentLng(request.getCurrentLng());
-            member.setLastLocationUpdate(LocalDateTime.now());
+        if (group.getMembers() != null) {
+            group.getMembers().stream()
+                    .filter(m -> m.getUser() != null && currentUser.getId().equals(m.getUser().getId()))
+                    .findFirst()
+                    .ifPresent(m -> {
+                        if (request.getOnMyWay() != null) m.setOnMyWay(request.getOnMyWay());
+                        if (request.getIsLead() != null) m.setIsLead(request.getIsLead());
+                    });
+            rideGroupRepository.save(group);
         }
 
-        rideGroupMemberRepository.save(member);
-
-        RideGroup group = rideGroupRepository.findById(groupId).orElseThrow();
         return RideGroupDTO.fromEntity(group);
     }
 }

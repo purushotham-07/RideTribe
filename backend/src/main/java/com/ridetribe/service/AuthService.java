@@ -13,7 +13,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -26,7 +25,6 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
-    @Transactional
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Error: Email is already registered!");
@@ -82,7 +80,6 @@ public class AuthService {
                 .build();
     }
 
-    @Transactional
     public AuthResponse googleAuth(String email, String name, String avatarUrl) {
         Optional<User> existing = userRepository.findByEmail(email);
         User user;
@@ -126,8 +123,7 @@ public class AuthService {
                 .orElseThrow(() -> new RuntimeException("User not found: " + email));
     }
 
-    @Transactional
-    public UserDTO updateProfile(Long userId, UserProfileUpdateRequest request) {
+    public UserDTO updateProfile(String userId, UserProfileUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

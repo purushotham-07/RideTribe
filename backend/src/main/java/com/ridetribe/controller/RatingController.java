@@ -24,12 +24,12 @@ public class RatingController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<RatingDTO>> getRatingsForUser(@PathVariable("userId") Long userId) {
+    public ResponseEntity<List<RatingDTO>> getRatingsForUser(@PathVariable("userId") String userId) {
         return ResponseEntity.ok(ratingService.getRatingsForUser(userId));
     }
 
     @GetMapping("/group/{groupId}")
-    public ResponseEntity<List<RatingDTO>> getRatingsForGroup(@PathVariable("groupId") Long groupId) {
+    public ResponseEntity<List<RatingDTO>> getRatingsForGroup(@PathVariable("groupId") String groupId) {
         return ResponseEntity.ok(ratingService.getRatingsForGroup(groupId));
     }
 }

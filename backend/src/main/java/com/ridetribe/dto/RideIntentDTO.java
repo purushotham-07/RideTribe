@@ -16,7 +16,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Builder
 public class RideIntentDTO {
-    private Long id;
+    private String id;
     private UserDTO user;
     private String destination;
     private TravelMode travelMode;
@@ -27,7 +27,6 @@ public class RideIntentDTO {
     private String startingArea;
     private String notes;
     private RideIntentStatus status;
-    private Long matchedGroupId;
     private LocalDateTime createdAt;
 
     public static RideIntentDTO fromEntity(RideIntent intent) {
@@ -44,7 +43,6 @@ public class RideIntentDTO {
                 .startingArea(intent.getStartingArea())
                 .notes(intent.getNotes())
                 .status(intent.getStatus())
-                .matchedGroupId(intent.getMatchedGroupId())
                 .createdAt(intent.getCreatedAt())
                 .build();
     }

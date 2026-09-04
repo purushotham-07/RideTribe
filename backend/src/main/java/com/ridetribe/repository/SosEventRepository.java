@@ -1,14 +1,17 @@
 package com.ridetribe.repository;
 
 import com.ridetribe.model.SosEvent;
-import com.ridetribe.model.SosStatus;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface SosEventRepository extends JpaRepository<SosEvent, Long> {
-    List<SosEvent> findByRideGroupIdOrderByTriggeredAtDesc(Long rideGroupId);
-    List<SosEvent> findByRideGroupIdAndStatus(Long rideGroupId, SosStatus status);
+public interface SosEventRepository extends MongoRepository<SosEvent, String> {
+
+    List<SosEvent> findByRideGroupIdOrderByCreatedAtDesc(String rideGroupId);
+
+    List<SosEvent> findByRideGroupIdAndResolved(String rideGroupId, Boolean resolved);
+
+    void deleteByRideGroupId(String rideGroupId);
 }

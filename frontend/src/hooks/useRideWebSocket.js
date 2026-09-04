@@ -29,8 +29,16 @@ export function useRideWebSocket(groupId, currentUser) {
       })
       .catch(err => console.warn("Initial location fetch failed:", err));
 
-    // STOMP Client setup
-    const wsUrl = import.meta.env.VITE_WS_URL || (window.location.protocol === 'https:' ? 'https://' : 'http://') + window.location.host + '/ws';
+    // STOMP Client setup - fallback to API base URL if set, otherwise window.location
+    let wsUrl = import.meta.env.VITE_WS_URL;
+    if (!wsUrl) {
+      const apiBase = import.meta.env.VITE_API_URL;
+      if (apiBase) {
+        wsUrl = `${apiBase.replace(/^http/, 'http')}/ws`;
+      } else {
+        wsUrl = (window.location.protocol === 'https:' ? 'https://' : 'http://') + window.location.host + '/ws';
+      }
+    }
 
     const client = new Client({
       webSocketFactory: () => new SockJS(wsUrl),

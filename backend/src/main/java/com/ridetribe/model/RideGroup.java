@@ -1,8 +1,11 @@
 package com.ridetribe.model;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexType;
+import org.springframework.data.mongodb.core.index.GeoSpatialIndexed;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -10,8 +13,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "ride_groups")
+@Document(collection = "ride_groups")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,23 +22,33 @@ import java.util.List;
 public class RideGroup {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @Column(nullable = false)
+    private String title;
+
+    private String description;
+
+    private User hostUser;
+
     private String destination;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
     private TravelMode travelMode;
 
-    @Column(nullable = false)
     private LocalDate rideDate;
 
-    @Column(nullable = false)
     private LocalTime scheduledTime;
 
-    // Rendezvous checkpoint in Bangalore
+    @Builder.Default
+    private Integer numberOfDays = 1;
+
+    @Builder.Default
+    private Integer maxMembers = 5;
+
+    private String whatToCarry;
+
+    private String coverImageUrl;
+
+    // Rendezvous checkpoint in Bangalore (coordinates for 2dsphere indexing)
     private String meetingPointName;
     private Double meetingPointLat;
     private Double meetingPointLng;
@@ -47,19 +59,23 @@ public class RideGroup {
 
     private Double estimatedDistanceKm;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Indexed
     @Builder.Default
     private RideGroupStatus status = RideGroupStatus.FORMING;
 
     private LocalDateTime startedAt;
     private LocalDateTime completedAt;
 
-    @OneToMany(mappedBy = "rideGroup", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JsonManagedReference
     @Builder.Default
     private List<RideGroupMember> members = new ArrayList<>();
 
     @Builder.Default
+    private List<TripJoinRequest> requests = new ArrayList<>();
+
+    @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    public boolean isFull() {
+        return members != null && maxMembers != null && members.size() >= maxMembers;
+    }
 }

@@ -1,24 +1,25 @@
 package com.ridetribe.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SubmitRatingRequest {
     @NotNull
-    private Long rideGroupId;
+    private String rideGroupId;
 
     @NotNull
-    private Long rateeId;
+    private String rateeId;
 
     @NotNull
-    @Min(1)
-    @Max(5)
-    private Integer stars;
+    @DecimalMin("1.0")
+    @DecimalMax("5.0")
+    private Double score;
 
-    private Boolean wouldRideAgain;
-    private String tags; // e.g. "Great Lead, Safe Rider, Punctual"
     private String comment;
 }

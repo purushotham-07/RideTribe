@@ -9,7 +9,6 @@ import com.ridetribe.model.User;
 import com.ridetribe.repository.RideIntentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,16 +20,15 @@ public class RideIntentService {
     private final RideIntentRepository rideIntentRepository;
     private final AuthService authService;
 
-    @Transactional
     public RideIntentDTO createIntent(CreateRideIntentRequest request) {
         User currentUser = authService.getCurrentAuthenticatedUser();
 
-        // Validate time window
         if (request.getWindowEndTime().isBefore(request.getWindowStartTime())) {
             throw new IllegalArgumentException("Window end time must be after start time");
         }
 
         RideIntent intent = RideIntent.builder()
+                .userId(currentUser.getId())
                 .user(currentUser)
                 .destination(request.getDestination().trim())
                 .travelMode(request.getTravelMode())
@@ -62,13 +60,12 @@ public class RideIntentService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public RideIntentDTO cancelIntent(Long intentId) {
+    public RideIntentDTO cancelIntent(String intentId) {
         User currentUser = authService.getCurrentAuthenticatedUser();
         RideIntent intent = rideIntentRepository.findById(intentId)
                 .orElseThrow(() -> new RuntimeException("Ride intent not found: " + intentId));
 
-        if (!intent.getUser().getId().equals(currentUser.getId())) {
+        if (intent.getUser() != null && !currentUser.getId().equals(intent.getUser().getId())) {
             throw new RuntimeException("Unauthorized: Cannot cancel another user's intent");
         }
 

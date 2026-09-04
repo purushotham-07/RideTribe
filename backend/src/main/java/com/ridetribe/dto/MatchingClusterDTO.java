@@ -15,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MatchingClusterDTO {
-    private Long rideGroupId;
+    private String rideGroupId;
     private String destination;
     private TravelMode travelMode;
     private LocalDate rideDate;

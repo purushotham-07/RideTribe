@@ -1,13 +1,13 @@
 package com.ridetribe.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "sos_events")
+@Document(collection = "sos_events")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,34 +16,24 @@ import java.time.LocalDateTime;
 public class SosEvent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnoreProperties({"intents", "passwordHash"})
+    @Indexed
+    private String rideGroupId;
+
     private User user;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ride_group_id", nullable = false)
-    @JsonIgnoreProperties({"members"})
-    private RideGroup rideGroup;
-
     private Double lat;
-    private Double lng;
 
-    private String emergencyContactName;
-    private String emergencyContactPhone;
+    private Double lng;
 
     private String notes;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
     @Builder.Default
-    private SosStatus status = SosStatus.ACTIVE;
+    private Boolean resolved = false;
 
     @Builder.Default
-    private LocalDateTime triggeredAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     private LocalDateTime resolvedAt;
 }

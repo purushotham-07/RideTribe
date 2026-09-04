@@ -11,13 +11,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class RatingDTO {
-    private Long id;
-    private Long rideGroupId;
+    private String id;
+    private String rideGroupId;
     private UserDTO rater;
     private UserDTO ratee;
-    private Integer stars;
-    private Boolean wouldRideAgain;
-    private String tags;
+    private Double score;
     private String comment;
     private LocalDateTime createdAt;
 
@@ -25,12 +23,10 @@ public class RatingDTO {
         if (rating == null) return null;
         return RatingDTO.builder()
                 .id(rating.getId())
-                .rideGroupId(rating.getRideGroup() != null ? rating.getRideGroup().getId() : null)
+                .rideGroupId(rating.getRideGroupId())
                 .rater(UserDTO.fromEntity(rating.getRater()))
                 .ratee(UserDTO.fromEntity(rating.getRatee()))
-                .stars(rating.getStars())
-                .wouldRideAgain(rating.getWouldRideAgain())
-                .tags(rating.getTags())
+                .score(rating.getScore())
                 .comment(rating.getComment())
                 .createdAt(rating.getCreatedAt())
                 .build();

@@ -12,9 +12,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SosAlertDTO {
-    private Long sosEventId;
-    private Long rideGroupId;
-    private Long userId;
+    private String sosEventId;
+    private String rideGroupId;
+    private String userId;
     private String userName;
     private String userAvatar;
     private String vehicleModel;

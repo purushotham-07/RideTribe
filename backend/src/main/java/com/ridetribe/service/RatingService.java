@@ -10,8 +10,8 @@ import com.ridetribe.repository.RideGroupRepository;
 import com.ridetribe.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,7 +25,6 @@ public class RatingService {
     private final UserRepository userRepository;
     private final AuthService authService;
 
-    @Transactional
     public RatingDTO submitRating(SubmitRatingRequest request) {
         User rater = authService.getCurrentAuthenticatedUser();
 
@@ -46,43 +45,43 @@ public class RatingService {
         Rating rating;
         if (existing.isPresent()) {
             rating = existing.get();
-            rating.setStars(request.getStars());
-            rating.setWouldRideAgain(request.getWouldRideAgain() != null ? request.getWouldRideAgain() : true);
-            rating.setTags(request.getTags());
+            rating.setScore(request.getScore());
             rating.setComment(request.getComment());
         } else {
             rating = Rating.builder()
-                    .rideGroup(group)
+                    .rideGroupId(group.getId())
+                    .raterId(rater.getId())
                     .rater(rater)
+                    .rateeId(ratee.getId())
                     .ratee(ratee)
-                    .stars(request.getStars())
-                    .wouldRideAgain(request.getWouldRideAgain() != null ? request.getWouldRideAgain() : true)
-                    .tags(request.getTags())
+                    .score(request.getScore())
                     .comment(request.getComment())
+                    .createdAt(LocalDateTime.now())
                     .build();
         }
 
         Rating saved = ratingRepository.save(rating);
 
         // Recalculate ratee's average rating and total counts
-        Double avgRating = ratingRepository.calculateAverageRatingForUser(ratee.getId());
-        Integer count = ratingRepository.countRatingsForUser(ratee.getId());
-
-        ratee.setAvgRating(avgRating != null ? Math.round(avgRating * 10.0) / 10.0 : 5.0);
-        ratee.setTotalRatings(count != null ? count : 0);
-        userRepository.save(ratee);
+        List<Rating> allRatings = ratingRepository.findByRateeId(ratee.getId());
+        if (!allRatings.isEmpty()) {
+            double avg = allRatings.stream().mapToDouble(Rating::getScore).average().orElse(5.0);
+            ratee.setAvgRating(Math.round(avg * 10.0) / 10.0);
+            ratee.setTotalRatings(allRatings.size());
+            userRepository.save(ratee);
+        }
 
         return RatingDTO.fromEntity(saved);
     }
 
-    public List<RatingDTO> getRatingsForUser(Long userId) {
+    public List<RatingDTO> getRatingsForUser(String userId) {
         return ratingRepository.findByRateeId(userId)
                 .stream()
                 .map(RatingDTO::fromEntity)
                 .collect(Collectors.toList());
     }
 
-    public List<RatingDTO> getRatingsForGroup(Long groupId) {
+    public List<RatingDTO> getRatingsForGroup(String groupId) {
         return ratingRepository.findByRideGroupId(groupId)
                 .stream()
                 .map(RatingDTO::fromEntity)

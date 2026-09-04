@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import confetti from 'canvas-confetti';
 import { Star, ThumbsUp, CheckCircle2, ArrowRight, User } from 'lucide-react';
 
@@ -17,6 +18,7 @@ const PRAISE_TAGS = [
 
 export default function PostRideRatingPage({ groupId, onDone }) {
   const { user } = useAuth();
+  const toast = useToast();
   const [group, setGroup] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -102,6 +104,7 @@ export default function PostRideRatingPage({ groupId, onDone }) {
 
       await Promise.all(promises);
       setSubmitted(true);
+      toast.success("⭐ Peer ratings submitted! Reputation scores updated.");
 
       confetti({
         particleCount: 50,
@@ -114,7 +117,7 @@ export default function PostRideRatingPage({ groupId, onDone }) {
       }, 1500);
 
     } catch (err) {
-      alert("Failed to submit ratings: " + err.message);
+      toast.error("Failed to submit ratings: " + err.message);
     } finally {
       setSubmitting(false);
     }
@@ -122,9 +125,9 @@ export default function PostRideRatingPage({ groupId, onDone }) {
 
   if (loading) {
     return (
-      <div className="py-20 text-center">
-        <div className="w-6 h-6 border-2 border-slate-900 dark:border-white border-t-transparent rounded-full animate-spin mx-auto"></div>
-        <p className="text-xs text-slate-500 mt-2">Loading peer rating form...</p>
+      <div className="py-20 text-center font-sans">
+        <div className="w-5 h-5 border-2 border-zinc-900 dark:border-zinc-100 border-t-transparent rounded-full animate-spin mx-auto"></div>
+        <p className="text-xs text-zinc-500 mt-2">Loading peer rating form...</p>
       </div>
     );
   }
@@ -132,21 +135,21 @@ export default function PostRideRatingPage({ groupId, onDone }) {
   const peersToRate = group?.members?.filter(m => m.user.id !== user?.id) || [];
 
   return (
-    <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6">
+    <div className="max-w-2xl mx-auto py-8 px-4 sm:px-6 font-sans">
       
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Peer Ratings</h1>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+      <div className="mb-6 pb-4 border-b border-border">
+        <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">Peer Ratings</h1>
+        <p className="text-xs text-muted-foreground mt-1">
           Rate your fellow convoy riders for the ride to <strong>{group?.destination}</strong>. Positive ratings boost future compatibility matching.
         </p>
       </div>
 
       {submitted ? (
-        <div className="p-8 rounded-2xl bg-white dark:bg-[#111726] border border-slate-200 dark:border-slate-800 text-center space-y-2 shadow-md">
+        <div className="p-8 rounded-2xl bg-card border border-border text-center space-y-2 shadow-subtle">
           <CheckCircle2 className="w-10 h-10 text-emerald-500 mx-auto" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Ratings Submitted</h2>
-          <p className="text-xs text-slate-500">Thank you for rating your group. Returning to dashboard...</p>
+          <h2 className="text-lg font-semibold text-foreground tracking-tight">Ratings Submitted</h2>
+          <p className="text-xs text-muted-foreground">Thank you for rating your group. Returning to dashboard...</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -157,24 +160,24 @@ export default function PostRideRatingPage({ groupId, onDone }) {
             return (
               <div
                 key={peer.id}
-                className="p-5 rounded-2xl bg-white dark:bg-[#111726] border border-slate-200 dark:border-slate-800 shadow-sm space-y-4"
+                className="p-5 rounded-2xl bg-card border border-border shadow-subtle space-y-4"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
-                    <div className="relative w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 ring-1 ring-slate-300 dark:ring-white/30 flex items-center justify-center font-bold text-xs overflow-hidden shrink-0">
+                    <div className="relative w-10 h-10 rounded-full bg-secondary border border-border flex items-center justify-center font-medium text-xs overflow-hidden shrink-0">
                       {peer.avatarUrl ? (
                         <img src={peer.avatarUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <User className="w-4 h-4" />
+                        <User className="w-4 h-4 text-muted-foreground" />
                       )}
                     </div>
                     <div>
-                      <h3 className="font-bold text-sm text-slate-900 dark:text-white">{peer.name}</h3>
+                      <h3 className="font-semibold text-sm text-foreground tracking-tight">{peer.name}</h3>
                       <div className="flex items-center space-x-1.5 mt-0.5">
                         {peer.vehiclePhotoUrl && (
-                          <img src={peer.vehiclePhotoUrl} alt="" className="w-4 h-4 rounded object-cover border border-slate-300 dark:border-slate-700 shrink-0" />
+                          <img src={peer.vehiclePhotoUrl} alt="" className="w-4 h-4 rounded object-cover border border-border shrink-0" />
                         )}
-                        <p className="text-xs text-slate-500 dark:text-slate-400">{peer.vehicleModel || 'Rider'}</p>
+                        <p className="text-xs text-muted-foreground">{peer.vehicleModel || 'Rider'}</p>
                       </div>
                     </div>
                   </div>
@@ -182,10 +185,10 @@ export default function PostRideRatingPage({ groupId, onDone }) {
                   <button
                     type="button"
                     onClick={() => handleRideAgainToggle(peer.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold border flex items-center space-x-1.5 transition-colors ${
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-medium border flex items-center space-x-1.5 transition-all shadow-xs ${
                       peerRating.wouldRideAgain
-                        ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-sm'
-                        : 'bg-slate-100 dark:bg-[#172033] text-slate-600 dark:text-slate-400 border-slate-300 dark:border-slate-700'
+                        ? 'bg-foreground text-background border-foreground'
+                        : 'bg-secondary text-muted-foreground border-border hover:text-foreground'
                     }`}
                   >
                     <ThumbsUp className="w-3.5 h-3.5" />
@@ -195,31 +198,30 @@ export default function PostRideRatingPage({ groupId, onDone }) {
 
                 {/* Stars */}
                 <div>
-                  <div className="flex items-center space-x-1.5">
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-muted-foreground mb-1.5">Rating</label>
+                  <div className="flex items-center space-x-1">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <button
                         key={star}
                         type="button"
                         onClick={() => handleStarChange(peer.id, star)}
-                        className="p-1 hover:scale-110 transition-transform"
+                        className="p-1 focus:outline-none transition-transform hover:scale-110"
                       >
                         <Star
-                          className={`w-7 h-7 ${
-                            star <= (peerRating.stars || 5)
-                              ? 'fill-white text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]'
-                              : 'text-slate-300 dark:text-slate-700'
+                          className={`w-5 h-5 ${
+                            star <= peerRating.stars
+                              ? 'text-amber-400 fill-amber-400'
+                              : 'text-neutral-300 dark:text-neutral-700'
                           }`}
                         />
                       </button>
                     ))}
-                    <span className="text-xs font-bold text-slate-700 dark:text-white ml-2">
-                      {peerRating.stars}.0 / 5.0
-                    </span>
                   </div>
                 </div>
 
-                {/* Tags */}
+                {/* Praise Tags */}
                 <div>
+                  <label className="block text-[11px] font-mono uppercase tracking-wider text-muted-foreground mb-1.5">Praise Tags</label>
                   <div className="flex flex-wrap gap-1.5">
                     {PRAISE_TAGS.map((tag) => {
                       const isSelected = peerRating.tags?.includes(tag);
@@ -228,10 +230,10 @@ export default function PostRideRatingPage({ groupId, onDone }) {
                           key={tag}
                           type="button"
                           onClick={() => handleTagToggle(peer.id, tag)}
-                          className={`px-3 py-1 rounded-xl text-xs font-semibold border transition-colors ${
+                          className={`px-2.5 py-1 rounded-full text-[11px] font-medium border transition-colors ${
                             isSelected
-                              ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-sm'
-                              : 'bg-slate-50 dark:bg-[#161f33] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:border-slate-300'
+                              ? 'bg-foreground text-background border-foreground'
+                              : 'bg-secondary text-muted-foreground border-border hover:text-foreground'
                           }`}
                         >
                           {isSelected ? `✓ ${tag}` : `+ ${tag}`}
@@ -247,7 +249,7 @@ export default function PostRideRatingPage({ groupId, onDone }) {
                   value={peerRating.comment || ''}
                   onChange={(e) => handleCommentChange(peer.id, e.target.value)}
                   placeholder="Optional feedback about this rider..."
-                  className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-[#161f33] border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+                  className="w-full px-3 py-2 text-xs bg-secondary/50 border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-signal"
                 />
 
               </div>
@@ -257,14 +259,14 @@ export default function PostRideRatingPage({ groupId, onDone }) {
           <button
             onClick={handleSubmitAllRatings}
             disabled={submitting}
-            className="w-full py-3 px-4 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-black text-xs font-bold hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center space-x-2 min-h-[44px] shadow-sm"
+            className="w-full py-2.5 px-4 rounded-full bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 text-xs font-semibold shadow-sm transition-all disabled:opacity-50 flex items-center justify-center space-x-2 min-h-[40px] active:scale-[0.99]"
           >
             {submitting ? (
               <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
             ) : (
               <>
                 <span>Submit Peer Ratings & Finish</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
               </>
             )}
           </button>

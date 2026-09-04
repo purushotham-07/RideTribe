@@ -3,16 +3,13 @@ package com.ridetribe.service;
 import com.ridetribe.dto.GroupLocationsDTO;
 import com.ridetribe.dto.LocationUpdateDTO;
 import com.ridetribe.dto.RegroupAlertDTO;
-import com.ridetribe.model.RideGroup;
-import com.ridetribe.model.RideGroupMember;
-import com.ridetribe.repository.RideGroupMemberRepository;
-import com.ridetribe.repository.RideGroupRepository;
+import com.ridetribe.model.RideTelemetry;
+import com.ridetribe.repository.RideTelemetryRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -27,11 +24,10 @@ public class LiveTelemetryService {
     public static final double REGROUP_DISTANCE_THRESHOLD_KM = 2.0;
 
     private final SimpMessagingTemplate messagingTemplate;
-    private final RideGroupMemberRepository rideGroupMemberRepository;
-    private final RideGroupRepository rideGroupRepository;
+    private final RideTelemetryRepository rideTelemetryRepository;
 
     // In-memory store of latest locations: groupId -> (userId -> LocationUpdateDTO)
-    private final Map<Long, Map<Long, LocationUpdateDTO>> groupLocationsCache = new ConcurrentHashMap<>();
+    private final Map<String, Map<String, LocationUpdateDTO>> groupLocationsCache = new ConcurrentHashMap<>();
 
     // Map to track when a rider started lagging: (groupId:userId) -> LocalDateTime
     private final Map<String, LocalDateTime> laggingTracker = new ConcurrentHashMap<>();
@@ -39,10 +35,9 @@ public class LiveTelemetryService {
     /**
      * Process incoming telemetry ping from a client.
      */
-    @Transactional
     public GroupLocationsDTO processLocationUpdate(LocationUpdateDTO update) {
-        Long groupId = update.getRideGroupId();
-        Long userId = update.getUserId();
+        String groupId = update.getRideGroupId();
+        String userId = update.getUserId();
 
         if (groupId == null || userId == null || update.getLat() == null || update.getLng() == null) {
             return null;
@@ -53,24 +48,32 @@ public class LiveTelemetryService {
         // Update in-memory location cache
         groupLocationsCache.computeIfAbsent(groupId, k -> new ConcurrentHashMap<>()).put(userId, update);
 
-        // Async update DB member coordinates periodically
+        // Async update dedicated RideTelemetry collection without document locking on RideGroup
         try {
-            rideGroupMemberRepository.findByRideGroupIdAndUserId(groupId, userId).ifPresent(m -> {
-                m.setCurrentLat(update.getLat());
-                m.setCurrentLng(update.getLng());
-                m.setCurrentSpeed(update.getSpeed());
-                m.setCurrentHeading(update.getHeading());
-                m.setLastLocationUpdate(LocalDateTime.now());
-                if (update.getOnMyWay() != null) {
-                    m.setOnMyWay(update.getOnMyWay());
-                }
-                rideGroupMemberRepository.save(m);
-            });
+            String compositeId = groupId + "_" + userId;
+            RideTelemetry telemetry = RideTelemetry.builder()
+                    .id(compositeId)
+                    .rideGroupId(groupId)
+                    .userId(userId)
+                    .userName(update.getUserName())
+                    .avatarUrl(update.getAvatarUrl())
+                    .vehicleModel(update.getVehicleModel())
+                    .lat(update.getLat())
+                    .lng(update.getLng())
+                    .speed(update.getSpeed())
+                    .heading(update.getHeading())
+                    .isLead(update.getIsLead())
+                    .onMyWay(update.getOnMyWay())
+                    .distanceFromLeadKm(update.getDistanceFromLeadKm())
+                    .isLagging(update.getIsLagging())
+                    .lastUpdated(LocalDateTime.now())
+                    .build();
+            rideTelemetryRepository.save(telemetry);
         } catch (Exception ignored) {
         }
 
         // Compute centroid and lead rider distance
-        Map<Long, LocationUpdateDTO> membersMap = groupLocationsCache.get(groupId);
+        Map<String, LocationUpdateDTO> membersMap = groupLocationsCache.get(groupId);
         GroupLocationsDTO groupLocations = computeGroupLocations(groupId, membersMap);
 
         // Check for lagging riders and evaluate regroup alerts
@@ -82,29 +85,31 @@ public class LiveTelemetryService {
         return groupLocations;
     }
 
-    public GroupLocationsDTO getLatestGroupLocations(Long groupId) {
-        Map<Long, LocationUpdateDTO> membersMap = groupLocationsCache.get(groupId);
+    public GroupLocationsDTO getLatestGroupLocations(String groupId) {
+        Map<String, LocationUpdateDTO> membersMap = groupLocationsCache.get(groupId);
         if (membersMap == null || membersMap.isEmpty()) {
-            // Populate from DB if cache is empty
+            // Populate from RideTelemetry collection if cache is empty
             membersMap = new ConcurrentHashMap<>();
-            List<RideGroupMember> dbMembers = rideGroupMemberRepository.findByRideGroupId(groupId);
-            for (RideGroupMember m : dbMembers) {
-                if (m.getCurrentLat() != null && m.getCurrentLng() != null) {
+            List<RideTelemetry> dbTelemetry = rideTelemetryRepository.findByRideGroupId(groupId);
+            for (RideTelemetry t : dbTelemetry) {
+                if (t.getLat() != null && t.getLng() != null) {
                     LocationUpdateDTO dto = LocationUpdateDTO.builder()
-                            .userId(m.getUser().getId())
-                            .userName(m.getUser().getName())
-                            .avatarUrl(m.getUser().getAvatarUrl())
-                            .vehicleModel(m.getUser().getVehicleModel())
+                            .userId(t.getUserId())
+                            .userName(t.getUserName())
+                            .avatarUrl(t.getAvatarUrl())
+                            .vehicleModel(t.getVehicleModel())
                             .rideGroupId(groupId)
-                            .lat(m.getCurrentLat())
-                            .lng(m.getCurrentLng())
-                            .speed(m.getCurrentSpeed() != null ? m.getCurrentSpeed() : 0.0)
-                            .heading(m.getCurrentHeading() != null ? m.getCurrentHeading() : 0.0)
-                            .onMyWay(m.getOnMyWay())
-                            .isLead(m.getIsLead())
-                            .updatedAt(m.getLastLocationUpdate() != null ? m.getLastLocationUpdate() : LocalDateTime.now())
+                            .lat(t.getLat())
+                            .lng(t.getLng())
+                            .speed(t.getSpeed() != null ? t.getSpeed() : 0.0)
+                            .heading(t.getHeading() != null ? t.getHeading() : 0.0)
+                            .onMyWay(t.getOnMyWay())
+                            .isLead(t.getIsLead())
+                            .distanceFromLeadKm(t.getDistanceFromLeadKm())
+                            .isLagging(t.getIsLagging())
+                            .updatedAt(t.getLastUpdated() != null ? t.getLastUpdated() : LocalDateTime.now())
                             .build();
-                    membersMap.put(m.getUser().getId(), dto);
+                    membersMap.put(t.getUserId(), dto);
                 }
             }
             groupLocationsCache.put(groupId, membersMap);
@@ -112,7 +117,7 @@ public class LiveTelemetryService {
         return computeGroupLocations(groupId, membersMap);
     }
 
-    private GroupLocationsDTO computeGroupLocations(Long groupId, Map<Long, LocationUpdateDTO> membersMap) {
+    private GroupLocationsDTO computeGroupLocations(String groupId, Map<String, LocationUpdateDTO> membersMap) {
         if (membersMap == null || membersMap.isEmpty()) {
             return GroupLocationsDTO.builder()
                     .rideGroupId(groupId)
@@ -123,7 +128,7 @@ public class LiveTelemetryService {
         double totalLat = 0;
         double totalLng = 0;
         int count = 0;
-        Long leadId = null;
+        String leadId = null;
         LocationUpdateDTO leadLoc = null;
 
         for (LocationUpdateDTO loc : membersMap.values()) {
@@ -159,20 +164,15 @@ public class LiveTelemetryService {
                 .build();
     }
 
-    /**
-     * Evaluates whether any rider has been lagging behind for > 20 seconds,
-     * and broadcasts a Regroup Alert if needed.
-     */
-    private void evaluateRegroupAlerts(Long groupId, GroupLocationsDTO groupLocations) {
+    private void evaluateRegroupAlerts(String groupId, GroupLocationsDTO groupLocations) {
         if (groupLocations.getLocations() == null) return;
 
         for (LocationUpdateDTO loc : groupLocations.getLocations().values()) {
             String trackerKey = groupId + ":" + loc.getUserId();
 
             if (Boolean.TRUE.equals(loc.getIsLagging())) {
-                LocalDateTime firstLagged = laggingTracker.computeIfAbsent(trackerKey, k -> LocalDateTime.now());
+                laggingTracker.computeIfAbsent(trackerKey, k -> LocalDateTime.now());
 
-                // Trigger alert if lagging for more than 10 seconds (or immediately if simulated lag)
                 RegroupAlertDTO alert = RegroupAlertDTO.builder()
                         .rideGroupId(groupId)
                         .laggingUserId(loc.getUserId())
@@ -186,7 +186,6 @@ public class LiveTelemetryService {
                         .alertTime(LocalDateTime.now())
                         .build();
 
-                // Broadcast alert to /topic/ride-groups/{groupId}/regroup-alert
                 messagingTemplate.convertAndSend("/topic/ride-groups/" + groupId + "/regroup-alert", alert);
             } else {
                 laggingTracker.remove(trackerKey);
@@ -194,9 +193,6 @@ public class LiveTelemetryService {
         }
     }
 
-    /**
-     * Haversine formula to compute geodesic distance between two GPS coordinates in kilometers.
-     */
     public double calculateHaversineDistanceKm(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371; // Earth radius in km
         double latDistance = Math.toRadians(lat2 - lat1);

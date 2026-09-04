@@ -4,12 +4,15 @@ import com.ridetribe.model.Pace;
 import com.ridetribe.model.TravelMode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CreateRideIntentRequest {
     @NotBlank
     private String destination;

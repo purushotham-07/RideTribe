@@ -99,24 +99,24 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
   const genderLabel = formData.gender === 'FEMALE' ? 'Female' : (formData.gender === 'OTHER' ? 'Other' : 'Male');
 
   return (
-    <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 space-y-6">
+    <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6 space-y-6 font-sans">
       
       {/* Top Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pb-4 border-b border-border">
         <div>
           {onBack && (
             <button
               onClick={onBack}
-              className="text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white mb-1.5 flex items-center space-x-1"
+              className="text-xs font-medium text-muted-foreground hover:text-foreground mb-2 flex items-center space-x-1.5 transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back</span>
             </button>
           )}
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
             {isOnboarding ? 'Complete Your Rider Profile' : 'Rider Profile & Vehicle'}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {isOnboarding
               ? 'Submit your demographic, vehicle details, and emergency contact for convoy matching.'
               : 'Manage your personal details, vehicle specs, and safety SOS contact.'}
@@ -126,67 +126,67 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
 
       {/* Onboarding Welcome Notice */}
       {isOnboarding && (
-        <div className="p-4 rounded-2xl bg-slate-900 text-white dark:bg-white dark:text-black shadow-md flex items-center justify-between text-xs">
+        <div className="p-4 rounded-2xl bg-secondary border border-border shadow-subtle flex items-center justify-between text-xs">
           <div>
-            <p className="font-bold text-sm">Welcome to RideTribe!</p>
-            <p className="opacity-90 mt-0.5">Please provide your gender, age, vehicle model, and emergency contact to finalize your account.</p>
+            <p className="font-semibold text-sm text-foreground">Welcome to RideTribe</p>
+            <p className="text-muted-foreground mt-0.5">Please provide your gender, age, vehicle model, and emergency contact to finalize your account.</p>
           </div>
         </div>
       )}
 
       {/* Success Notification */}
       {successMsg && (
-        <div className="p-3.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold flex items-center space-x-2">
-          <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+        <div className="p-3.5 rounded-xl bg-emerald-500/15 border border-emerald-500/20 text-emerald-500 text-xs font-medium flex items-center space-x-2">
+          <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
           <span>{successMsg}</span>
         </div>
       )}
 
       {/* Error Notification */}
       {errorMsg && (
-        <div className="p-3.5 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-800 dark:text-rose-300 text-xs font-semibold">
+        <div className="p-3.5 rounded-xl bg-rose-500/15 border border-rose-500/20 text-rose-500 text-xs font-medium">
           {errorMsg}
         </div>
       )}
 
       {/* Profile Overview Card */}
       {!isOnboarding && user && (
-        <div className="p-5 rounded-2xl bg-white dark:bg-[#111726] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
+        <div className="p-6 rounded-2xl bg-card border border-border shadow-subtle flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4">
           <div className="flex items-center space-x-4">
-            <div className="relative w-16 h-16 rounded-full bg-slate-200 dark:bg-slate-800 ring-2 ring-slate-300 dark:ring-white/30 overflow-hidden shrink-0 flex items-center justify-center">
+            <div className="relative w-16 h-16 rounded-full bg-secondary border border-border overflow-hidden shrink-0 flex items-center justify-center">
               {formData.avatarUrl || user.avatarUrl ? (
                 <img src={formData.avatarUrl || user.avatarUrl} alt="" className="w-full h-full object-cover" />
               ) : (
-                <User className="w-8 h-8 text-slate-400" />
+                <User className="w-8 h-8 text-muted-foreground" />
               )}
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <h2 className="font-bold text-lg text-slate-900 dark:text-white">{user.name}</h2>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white border border-slate-200 dark:border-white/20">
+                <h2 className="font-semibold text-lg text-foreground tracking-tight">{user.name}</h2>
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-secondary text-foreground border border-border">
                   {user.preferredMode === 'CAR' ? '🚗 Driver' : '🏍️ Biker'}
                 </span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-white/10">
+                <span className="px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-secondary text-muted-foreground border border-border">
                   {genderLabel}, {formData.age || user.age || 25} yrs
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{user.email}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{user.email}</p>
               
-              <div className="flex items-center space-x-3 mt-2 text-xs font-semibold">
-                <span className="text-slate-700 dark:text-white">⭐ {user.avgRating || '5.0'} Rating</span>
-                <span className="text-slate-400">•</span>
-                <span className="text-slate-700 dark:text-white">{user.ridesCompleted || 0} Rides Completed</span>
+              <div className="flex items-center space-x-3 mt-2 text-xs font-medium">
+                <span className="text-foreground">★ {user.avgRating || '5.0'} Rating</span>
+                <span className="text-muted-foreground">•</span>
+                <span className="text-foreground">{user.ridesCompleted || 0} Rides Completed</span>
               </div>
             </div>
           </div>
 
           {formData.vehiclePhotoUrl && (
             <div className="text-center sm:text-right">
-              <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Your Vehicle</span>
+              <span className="text-[10px] uppercase tracking-wider font-semibold text-muted-foreground block mb-1">Your Vehicle</span>
               <img
                 src={formData.vehiclePhotoUrl}
                 alt="Vehicle"
-                className="w-24 h-16 rounded-xl object-cover border border-slate-200 dark:border-slate-700 shadow-xs mx-auto sm:ml-auto"
+                className="w-24 h-16 rounded-xl object-cover border border-border shadow-xs mx-auto sm:ml-auto"
               />
             </div>
           )}
@@ -194,34 +194,34 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
       )}
 
       {/* Edit Form */}
-      <form onSubmit={handleSubmit} className="p-6 rounded-2xl bg-white dark:bg-[#111726] border border-slate-200 dark:border-slate-800 shadow-sm space-y-5">
+      <form onSubmit={handleSubmit} className="p-6 rounded-2xl bg-card border border-border shadow-subtle space-y-6">
         
-        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 pb-2 border-b border-slate-100 dark:border-slate-800">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 pb-2 border-b border-zinc-100 dark:border-zinc-800/80">
           Personal & Demographic Info
         </h3>
 
         {/* Name & Phone */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Full Name</label>
+            <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Full Name</label>
             <input
               type="text"
               required
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="Your full name"
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-[#161f33] border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white min-h-[44px]"
+              className="w-full px-3 py-2 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-zinc-300 min-h-[40px] transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Phone Number</label>
+            <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Phone Number</label>
             <input
               type="tel"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
               placeholder="+91 98860 12345"
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-[#161f33] border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white min-h-[44px]"
+              className="w-full px-3 py-2 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-zinc-300 min-h-[40px] transition-colors"
             />
           </div>
         </div>
@@ -229,15 +229,15 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
         {/* Gender & Age */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Gender</label>
+            <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Gender</label>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, gender: 'MALE' })}
-                className={`py-2.5 px-2 rounded-xl text-xs font-bold border flex items-center justify-center min-h-[44px] ${
+                className={`py-2 px-2 rounded-lg text-xs font-medium border flex items-center justify-center min-h-[40px] transition-colors ${
                   formData.gender === 'MALE'
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-xs'
-                    : 'bg-slate-50 dark:bg-[#161f33] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                    ? 'bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-950 border-zinc-900 dark:border-zinc-50 shadow-xs'
+                    : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
                 }`}
               >
                 Male ♂
@@ -246,10 +246,10 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, gender: 'FEMALE' })}
-                className={`py-2.5 px-2 rounded-xl text-xs font-bold border flex items-center justify-center min-h-[44px] ${
+                className={`py-2 px-2 rounded-lg text-xs font-medium border flex items-center justify-center min-h-[40px] transition-colors ${
                   formData.gender === 'FEMALE'
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-xs'
-                    : 'bg-slate-50 dark:bg-[#161f33] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                    ? 'bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-950 border-zinc-900 dark:border-zinc-50 shadow-xs'
+                    : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
                 }`}
               >
                 Female ♀
@@ -258,10 +258,10 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, gender: 'OTHER' })}
-                className={`py-2.5 px-2 rounded-xl text-xs font-bold border flex items-center justify-center min-h-[44px] ${
+                className={`py-2 px-2 rounded-lg text-xs font-medium border flex items-center justify-center min-h-[40px] transition-colors ${
                   formData.gender === 'OTHER'
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-xs'
-                    : 'bg-slate-50 dark:bg-[#161f33] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                    ? 'bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-950 border-zinc-900 dark:border-zinc-50 shadow-xs'
+                    : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
                 }`}
               >
                 Other
@@ -270,7 +270,7 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Age</label>
+            <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Age</label>
             <input
               type="number"
               min="18"
@@ -279,27 +279,27 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
               value={formData.age}
               onChange={(e) => setFormData({ ...formData, age: parseInt(e.target.value) || 25 })}
               placeholder="e.g. 25"
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-[#161f33] border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white min-h-[44px]"
+              className="w-full px-3 py-2 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-zinc-300 min-h-[40px] transition-colors"
             />
           </div>
         </div>
 
-        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 pt-3 pb-2 border-b border-slate-100 dark:border-slate-800">
+        <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 pt-3 pb-2 border-b border-zinc-100 dark:border-zinc-800/80">
           Vehicle & Travel Mode
         </h3>
 
         {/* Travel Mode & Vehicle Details */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Preferred Mode</label>
+            <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Preferred Mode</label>
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, preferredMode: 'BIKE' })}
-                className={`py-2.5 px-2 rounded-xl text-xs font-bold border flex items-center justify-center space-x-1 min-h-[44px] ${
+                className={`py-2 px-2 rounded-lg text-xs font-medium border flex items-center justify-center space-x-1.5 min-h-[40px] transition-colors ${
                   formData.preferredMode === 'BIKE'
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-xs'
-                    : 'bg-slate-50 dark:bg-[#161f33] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                    ? 'bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-950 border-zinc-900 dark:border-zinc-50 shadow-xs'
+                    : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
                 }`}
               >
                 <Bike className="w-3.5 h-3.5" />
@@ -309,10 +309,10 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
               <button
                 type="button"
                 onClick={() => setFormData({ ...formData, preferredMode: 'CAR' })}
-                className={`py-2.5 px-2 rounded-xl text-xs font-bold border flex items-center justify-center space-x-1 min-h-[44px] ${
+                className={`py-2 px-2 rounded-lg text-xs font-medium border flex items-center justify-center space-x-1.5 min-h-[40px] transition-colors ${
                   formData.preferredMode === 'CAR'
-                    ? 'bg-slate-900 text-white dark:bg-white dark:text-black border-transparent shadow-xs'
-                    : 'bg-slate-50 dark:bg-[#161f33] text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                    ? 'bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-950 border-zinc-900 dark:border-zinc-50 shadow-xs'
+                    : 'bg-zinc-50 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800/60'
                 }`}
               >
                 <Car className="w-3.5 h-3.5" />
@@ -322,52 +322,52 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Vehicle Model</label>
+            <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Vehicle Model</label>
             <input
               type="text"
               value={formData.vehicleModel}
               onChange={(e) => setFormData({ ...formData, vehicleModel: e.target.value })}
               placeholder="e.g. Himalayan 450 / Duke 390"
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-[#161f33] border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white min-h-[44px]"
+              className="w-full px-3 py-2 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-zinc-300 min-h-[40px] transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Vehicle Number</label>
+            <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Vehicle Number</label>
             <input
               type="text"
               value={formData.vehicleNumber}
               onChange={(e) => setFormData({ ...formData, vehicleNumber: e.target.value })}
               placeholder="e.g. KA-03-AB-1234"
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-[#161f33] border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white min-h-[44px]"
+              className="w-full px-3 py-2 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-zinc-300 min-h-[40px] transition-colors"
             />
           </div>
         </div>
 
         {/* Photo Uploads Section (Cloudinary) */}
-        <div className="p-4 rounded-xl bg-slate-50 dark:bg-[#161f33] border border-slate-200 dark:border-slate-800 space-y-3">
-          <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-800 dark:text-white">
-            <Camera className="w-4 h-4" />
-            <span>Upload Photos (Cloudinary)</span>
+        <div className="p-4 rounded-lg bg-zinc-50 dark:bg-zinc-900/60 border border-zinc-200 dark:border-zinc-800 space-y-3">
+          <div className="flex items-center space-x-1.5 text-xs font-medium text-zinc-900 dark:text-zinc-100">
+            <Camera className="w-4 h-4 text-zinc-500" />
+            <span>Upload Photos</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {/* Rider Avatar Photo */}
             <div>
-              <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Rider Avatar</label>
-              <label className="flex items-center space-x-3 p-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-[#111726] cursor-pointer hover:border-slate-400 min-h-[64px]">
+              <label className="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Rider Avatar</label>
+              <label className="flex items-center space-x-3 p-3 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-600 min-h-[58px] transition-colors">
                 {formData.avatarUrl ? (
                   <img src={formData.avatarUrl} alt="Avatar" className="w-10 h-10 rounded-full object-cover shrink-0" />
                 ) : (
-                  <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                    <User className="w-5 h-5 text-slate-400" />
+                  <div className="w-10 h-10 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+                    <User className="w-5 h-5 text-zinc-400" />
                   </div>
                 )}
                 <div className="text-xs">
-                  <span className="font-semibold text-slate-900 dark:text-white block">
+                  <span className="font-medium text-zinc-900 dark:text-zinc-100 block">
                     {uploadingAvatar ? 'Uploading...' : (formData.avatarUrl ? 'Change Avatar' : 'Upload Avatar')}
                   </span>
-                  <span className="text-[10px] text-slate-400">PNG or JPG</span>
+                  <span className="text-[10px] text-zinc-400">PNG or JPG</span>
                 </div>
                 <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
               </label>
@@ -375,20 +375,20 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
 
             {/* Bike / Car Photo */}
             <div>
-              <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Motorcycle / Car Photo</label>
-              <label className="flex items-center space-x-3 p-3 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-[#111726] cursor-pointer hover:border-slate-400 min-h-[64px]">
+              <label className="block text-[11px] text-zinc-500 dark:text-zinc-400 mb-1">Motorcycle / Car Photo</label>
+              <label className="flex items-center space-x-3 p-3 rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-600 min-h-[58px] transition-colors">
                 {formData.vehiclePhotoUrl ? (
-                  <img src={formData.vehiclePhotoUrl} alt="Bike" className="w-10 h-10 rounded-lg object-cover shrink-0" />
+                  <img src={formData.vehiclePhotoUrl} alt="Bike" className="w-10 h-10 rounded-md object-cover shrink-0" />
                 ) : (
-                  <div className="w-10 h-10 rounded-lg bg-slate-200 dark:bg-slate-800 flex items-center justify-center shrink-0">
-                    <Bike className="w-5 h-5 text-slate-400" />
+                  <div className="w-10 h-10 rounded-md bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shrink-0">
+                    <Bike className="w-5 h-5 text-zinc-400" />
                   </div>
                 )}
                 <div className="text-xs">
-                  <span className="font-semibold text-slate-900 dark:text-white block">
+                  <span className="font-medium text-zinc-900 dark:text-zinc-100 block">
                     {uploadingVehicle ? 'Uploading...' : (formData.vehiclePhotoUrl ? 'Change Vehicle Pic' : 'Upload Vehicle Pic')}
                   </span>
-                  <span className="text-[10px] text-slate-400">PNG or JPG</span>
+                  <span className="text-[10px] text-zinc-400">PNG or JPG</span>
                 </div>
                 <input type="file" accept="image/*" onChange={handleVehiclePhotoUpload} className="hidden" />
               </label>
@@ -397,32 +397,32 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
         </div>
 
         {/* Emergency Safety Contact */}
-        <div className="p-4 rounded-xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/60 space-y-3">
-          <div className="flex items-center space-x-1.5 text-xs font-bold text-rose-700 dark:text-rose-400">
+        <div className="p-4 rounded-lg bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 space-y-3">
+          <div className="flex items-center space-x-1.5 text-xs font-semibold text-red-700 dark:text-red-400">
             <Shield className="w-4 h-4" />
             <span>Emergency SOS Safety Contact (Family / Friend)</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Contact Name</label>
+              <label className="block text-[11px] text-zinc-600 dark:text-zinc-400 mb-1">Contact Name</label>
               <input
                 type="text"
                 value={formData.emergencyContactName}
                 onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })}
                 placeholder="Family contact name"
-                className="w-full px-3.5 py-2.5 text-xs bg-white dark:bg-[#111726] border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500 min-h-[44px]"
+                className="w-full px-3 py-2 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-red-500 min-h-[40px]"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] text-slate-600 dark:text-slate-400 mb-1">Contact Phone</label>
+              <label className="block text-[11px] text-zinc-600 dark:text-zinc-400 mb-1">Contact Phone</label>
               <input
                 type="tel"
                 value={formData.emergencyContactPhone}
                 onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })}
                 placeholder="+91 98860 00000"
-                className="w-full px-3.5 py-2.5 text-xs bg-white dark:bg-[#111726] border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500 min-h-[44px]"
+                className="w-full px-3 py-2 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-red-500 min-h-[40px]"
               />
             </div>
           </div>
@@ -430,13 +430,13 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
 
         {/* Bio */}
         <div>
-          <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">Rider Bio / Riding Style</label>
+          <label className="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Rider Bio / Riding Style</label>
           <textarea
             rows={2}
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
             placeholder="e.g. Weekend tourer, prefer highway breakfast rides and scenic mountain routes."
-            className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-[#161f33] border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-900 dark:focus:ring-white"
+            className="w-full px-3 py-2 text-xs bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-lg text-zinc-950 dark:text-zinc-50 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-950 dark:focus:ring-zinc-300"
           />
         </div>
 
@@ -444,7 +444,7 @@ export default function ProfilePage({ isOnboarding = false, onComplete, onBack }
         <button
           type="submit"
           disabled={saving}
-          className="w-full py-3.5 px-5 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-black font-bold text-xs hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center justify-center space-x-2 min-h-[44px] shadow-sm"
+          className="w-full py-2.5 px-4 rounded-full bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 font-medium text-xs transition-all disabled:opacity-50 flex items-center justify-center space-x-2 min-h-[40px] shadow-sm active:scale-[0.99]"
         >
           {saving ? (
             <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>

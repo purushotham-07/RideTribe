@@ -1,15 +1,15 @@
 package com.ridetribe.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-@Entity
-@Table(name = "ride_intents")
+@Document(collection = "ride_intents")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,46 +18,32 @@ import java.time.LocalTime;
 public class RideIntent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnoreProperties({"intents", "passwordHash"})
+    @Indexed
+    private String userId;
+
     private User user;
 
-    @Column(nullable = false)
-    private String destination; // e.g. "Nandi Hills", "Coorg", "Chikmagalur", "Lepakshi"
+    private String destination;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private TravelMode travelMode; // BIKE or CAR
+    private TravelMode travelMode;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    @Builder.Default
-    private Pace pace = Pace.MODERATE;
+    private Pace pace;
 
-    @Column(nullable = false)
     private LocalDate rideDate;
 
-    @Column(nullable = false)
-    private LocalTime windowStartTime; // e.g. 05:00 AM
+    private LocalTime windowStartTime;
 
-    @Column(nullable = false)
-    private LocalTime windowEndTime; // e.g. 07:00 AM
+    private LocalTime windowEndTime;
 
-    private String startingArea; // e.g. "Indiranagar", "Koramangala", "Hebbal", "Whitefield"
+    private String startingArea;
 
-    @Column(length = 1000)
     private String notes;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Indexed
     @Builder.Default
     private RideIntentStatus status = RideIntentStatus.PENDING;
-
-    private Long matchedGroupId;
 
     @Builder.Default
     private LocalDateTime createdAt = LocalDateTime.now();

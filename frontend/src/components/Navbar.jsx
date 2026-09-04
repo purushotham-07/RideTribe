@@ -1,102 +1,137 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import GoogleLoginButton from './GoogleLoginButton';
-import { Compass, Users, Sparkles, LogOut, Sun, Moon, Bike, User } from 'lucide-react';
+import { Compass, Users, Sparkles, LogOut, Sun, Moon, Bike, User, Plus, Menu, X, Search } from 'lucide-react';
 
-export default function Navbar({ activeTab, setActiveTab, onOpenMatcherModal }) {
+export default function Navbar({ activeTab, setActiveTab, onOpenHostTrip, onOpenMatcherModal }) {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const handleNav = (tab) => {
+    setActiveTab(tab);
+    setMobileMenuOpen(false);
+  };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#090d16]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-14">
           
-          {/* Brand */}
-          <div
-            onClick={() => setActiveTab('explore')}
-            className="flex items-center space-x-2.5 cursor-pointer select-none group"
-          >
-            <div className="w-8 h-8 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-black flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
-              <Bike className="w-4 h-4" />
-            </div>
-            <div>
-              <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white">
-                RideTribe
-              </span>
-              <span className="ml-1.5 text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white border border-transparent dark:border-white/20">BLR</span>
-            </div>
+          {/* Left: Brand & Desktop Nav Links */}
+          <div className="flex items-center space-x-6">
+            <button
+              onClick={() => handleNav('explore-trips')}
+              className="flex items-center space-x-2.5 focus:outline-none group"
+            >
+              <div className="w-8 h-8 rounded-lg bg-foreground text-background flex items-center justify-center font-bold text-xs shadow-xs transition-transform group-hover:scale-105">
+                <Bike className="w-4 h-4 stroke-[2.2]" />
+              </div>
+              <div className="flex items-center space-x-1.5">
+                <span className="font-bold text-sm tracking-tight text-foreground">
+                  RideTribe
+                </span>
+                <span className="text-[10px] uppercase font-mono font-medium px-1.5 py-0.5 rounded-full bg-secondary text-muted-foreground border border-border">
+                  BLR
+                </span>
+              </div>
+            </button>
+
+            {/* Desktop Navigation Links */}
+            <nav className="hidden md:flex items-center space-x-1 text-xs">
+              <button
+                onClick={() => handleNav('explore-trips')}
+                className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                  activeTab === 'explore-trips'
+                    ? 'text-foreground bg-secondary font-semibold'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+                }`}
+              >
+                Explore
+              </button>
+
+              <button
+                onClick={() => handleNav('my-rides')}
+                className={`px-3 py-1.5 rounded-md font-medium transition-colors ${
+                  activeTab === 'my-rides' || activeTab === 'group' || activeTab === 'live'
+                    ? 'text-foreground bg-secondary font-semibold'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/60'
+                }`}
+              >
+                My Rides
+              </button>
+
+              <button
+                onClick={() => {
+                  onOpenMatcherModal();
+                  setMobileMenuOpen(false);
+                }}
+                className="px-3 py-1.5 rounded-md font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/60 transition-colors"
+              >
+                Match Pool
+              </button>
+            </nav>
           </div>
 
-          {/* Center Navigation Links */}
-          <nav className="hidden sm:flex items-center space-x-1">
+          {/* Right: Actions */}
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            
+            {/* Search Bar Widget (Desktop) */}
             <button
-              onClick={() => setActiveTab('explore')}
-              className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                activeTab === 'explore'
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-sm'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10'
-              }`}
+              onClick={() => handleNav('explore-trips')}
+              className="hidden lg:flex items-center space-x-3 px-3 py-1.5 rounded-lg bg-secondary/50 hover:bg-secondary text-xs text-muted-foreground border border-border transition-colors w-52 justify-between"
             >
-              <Compass className="w-3.5 h-3.5" />
-              <span>Post Intent</span>
+              <div className="flex items-center space-x-2">
+                <Search className="w-3.5 h-3.5 text-muted-foreground" />
+                <span>Search routes...</span>
+              </div>
+              <kbd className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-background border border-border text-foreground">
+                ⌘K
+              </kbd>
             </button>
 
+            {/* High-Contrast Primary CTA: + Host Ride */}
             <button
-              onClick={() => setActiveTab('my-rides')}
-              className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                activeTab === 'my-rides' || activeTab === 'group' || activeTab === 'live'
-                  ? 'bg-slate-900 text-white dark:bg-white dark:text-black shadow-sm'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10'
-              }`}
+              onClick={onOpenHostTrip}
+              className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-foreground text-background hover:opacity-90 active:scale-95 shadow-sm transition-all whitespace-nowrap"
             >
-              <Users className="w-3.5 h-3.5" />
-              <span>My Rides</span>
+              <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span className="hidden xs:inline sm:inline">Host Ride</span>
+              <span className="inline xs:hidden sm:hidden">Host</span>
             </button>
 
-            <button
-              onClick={onOpenMatcherModal}
-              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-800 dark:text-white bg-slate-100 dark:bg-white/10 border border-slate-300 dark:border-white/20 hover:bg-slate-200 dark:hover:bg-white/20 transition-all"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-slate-900 dark:text-white" />
-              <span>Match Engine</span>
-            </button>
-          </nav>
-
-          {/* Right Action Icons & Auth */}
-          <div className="flex items-center space-x-2">
-            {/* Dark / Light Mode Toggle */}
+            {/* Theme Toggle Button */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-xl text-slate-500 dark:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors border border-transparent dark:border-white/10"
+              className="w-8 h-8 rounded-full border border-border bg-background hover:bg-secondary text-foreground flex items-center justify-center transition-colors"
               title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
               aria-label="Toggle Theme"
             >
               {theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-white" />
+                <Sun className="w-4 h-4 stroke-[1.75]" />
               ) : (
-                <Moon className="w-4 h-4 text-slate-700" />
+                <Moon className="w-4 h-4 stroke-[1.75]" />
               )}
             </button>
 
+            {/* User Profile & Auth */}
             {user ? (
-              <div className="flex items-center space-x-2 pl-2 border-l border-slate-200 dark:border-slate-800">
-                {/* Profile Button - Avatar Only */}
+              <div className="flex items-center space-x-1.5 pl-1.5 border-l border-border">
                 <button
-                  onClick={() => setActiveTab('profile')}
-                  className={`p-1 rounded-full transition-transform hover:scale-105 ${
+                  onClick={() => handleNav('profile')}
+                  className={`relative p-0.5 rounded-full transition-all ${
                     activeTab === 'profile'
-                      ? 'ring-2 ring-slate-900 dark:ring-white'
-                      : 'opacity-90 hover:opacity-100'
+                      ? 'ring-2 ring-foreground'
+                      : 'hover:opacity-80'
                   }`}
-                  title={`${user.name} — View & Edit Profile`}
+                  title={`${user.name} Profile`}
                 >
-                  <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 ring-1 ring-slate-300 dark:ring-white/30 flex items-center justify-center text-slate-700 dark:text-white font-bold overflow-hidden shadow-xs shrink-0">
+                  <div className="w-7 h-7 rounded-full bg-secondary border border-border flex items-center justify-center text-xs font-bold text-foreground overflow-hidden">
                     {user.avatarUrl ? (
                       <img src={user.avatarUrl} alt={user.name} className="w-full h-full object-cover" />
                     ) : (
-                      <User className="w-4 h-4" />
+                      <span>{user.name ? user.name.charAt(0).toUpperCase() : 'U'}</span>
                     )}
                   </div>
                 </button>
@@ -104,67 +139,85 @@ export default function Navbar({ activeTab, setActiveTab, onOpenMatcherModal }) 
                 <button
                   onClick={() => {
                     logout();
-                    setActiveTab('auth');
+                    handleNav('auth');
                   }}
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+                  className="w-7 h-7 rounded-full text-muted-foreground hover:text-destructive hover:bg-secondary flex items-center justify-center transition-colors"
                   title="Sign out"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
             ) : (
               <div className="flex items-center space-x-2">
                 <GoogleLoginButton
-                  onSuccess={() => setActiveTab('explore')}
-                  onRequireOnboarding={() => setActiveTab('onboarding')}
+                  onSuccess={() => handleNav('explore-trips')}
+                  onRequireOnboarding={() => handleNav('onboarding')}
                   className="!py-1.5 !pl-1.5 !pr-3 text-[11px]"
                 />
               </div>
             )}
+
+            {/* Mobile Menu Hamburger */}
+            <button
+              onClick={() => setMobileMenuOpen(prev => !prev)}
+              className="md:hidden w-8 h-8 rounded-full border border-border bg-background hover:bg-secondary text-foreground flex items-center justify-center transition-colors"
+              aria-label="Toggle Navigation Menu"
+            >
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
+
           </div>
-
         </div>
 
-        {/* Mobile Navigation bar */}
-        <div className="flex sm:hidden items-center justify-around py-2 border-t border-slate-100 dark:border-slate-800">
-          <button
-            onClick={() => setActiveTab('explore')}
-            className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-semibold ${
-              activeTab === 'explore' ? 'text-black dark:text-white bg-slate-100 dark:bg-white/15' : 'text-slate-500 dark:text-slate-400'
-            }`}
-          >
-            <Compass className="w-3.5 h-3.5" />
-            <span>Post</span>
-          </button>
+        {/* Responsive Mobile Drawer Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden py-3 border-t border-border space-y-1 animate-in slide-in-from-top duration-150">
+            <button
+              onClick={() => handleNav('explore-trips')}
+              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                activeTab === 'explore-trips'
+                  ? 'bg-secondary text-foreground font-semibold'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+              }`}
+            >
+              Explore Convoys
+            </button>
 
-          <button
-            onClick={() => setActiveTab('my-rides')}
-            className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-semibold ${
-              activeTab === 'my-rides' ? 'text-black dark:text-white bg-slate-100 dark:bg-white/15' : 'text-slate-500 dark:text-slate-400'
-            }`}
-          >
-            <Users className="w-3.5 h-3.5" />
-            <span>Rides</span>
-          </button>
+            <button
+              onClick={() => handleNav('my-rides')}
+              className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                activeTab === 'my-rides' || activeTab === 'group' || activeTab === 'live'
+                  ? 'bg-secondary text-foreground font-semibold'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+              }`}
+            >
+              My Rides & Active Convoys
+            </button>
 
-          <button
-            onClick={() => setActiveTab('profile')}
-            className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-semibold ${
-              activeTab === 'profile' ? 'text-black dark:text-white bg-slate-100 dark:bg-white/15' : 'text-slate-500 dark:text-slate-400'
-            }`}
-          >
-            <User className="w-3.5 h-3.5" />
-            <span>Profile</span>
-          </button>
+            <button
+              onClick={() => {
+                onOpenMatcherModal();
+                setMobileMenuOpen(false);
+              }}
+              className="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
+            >
+              Match Pool Simulator
+            </button>
 
-          <button
-            onClick={onOpenMatcherModal}
-            className="flex items-center space-x-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold text-slate-700 dark:text-white"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-slate-900 dark:text-white" />
-            <span>Matcher</span>
-          </button>
-        </div>
+            {user && (
+              <button
+                onClick={() => handleNav('profile')}
+                className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
+                  activeTab === 'profile'
+                    ? 'bg-secondary text-foreground font-semibold'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-secondary/50'
+                }`}
+              >
+                My Profile & Garage
+              </button>
+            )}
+          </div>
+        )}
 
       </div>
     </header>

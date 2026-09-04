@@ -21,5 +21,18 @@ export default defineConfig({
         changeOrigin: true,
       }
     }
+  },
+  build: {
+    chunkSizeWarningLimit: 800,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-maps': ['leaflet', 'react-leaflet'],
+          'vendor-icons': ['lucide-react'],
+          'vendor-stomp': ['@stomp/stompjs', 'sockjs-client']
+        }
+      }
+    }
   }
 })

@@ -4,7 +4,6 @@ import com.ridetribe.dto.SosAlertDTO;
 import com.ridetribe.dto.SosTriggerRequest;
 import com.ridetribe.model.RideGroup;
 import com.ridetribe.model.SosEvent;
-import com.ridetribe.model.SosStatus;
 import com.ridetribe.model.User;
 import com.ridetribe.repository.RideGroupRepository;
 import com.ridetribe.repository.SosEventRepository;
@@ -13,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,7 +27,6 @@ public class SosService {
     private final AuthService authService;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @Transactional
     public SosAlertDTO triggerSos(SosTriggerRequest request) {
         User currentUser = authService.getCurrentAuthenticatedUser();
         RideGroup group = rideGroupRepository.findById(request.getRideGroupId())
@@ -40,14 +37,12 @@ public class SosService {
 
         SosEvent event = SosEvent.builder()
                 .user(currentUser)
-                .rideGroup(group)
+                .rideGroupId(group.getId())
                 .lat(request.getLat())
                 .lng(request.getLng())
-                .emergencyContactName(currentUser.getEmergencyContactName() != null ? currentUser.getEmergencyContactName() : "Next of Kin")
-                .emergencyContactPhone(currentUser.getEmergencyContactPhone() != null ? currentUser.getEmergencyContactPhone() : "+91-9988776655")
-                .notes(request.getNotes())
-                .status(SosStatus.ACTIVE)
-                .triggeredAt(LocalDateTime.now())
+                .notes(request.getNotes() != null ? request.getNotes() : "Rider requested immediate group assistance!")
+                .resolved(false)
+                .createdAt(LocalDateTime.now())
                 .build();
 
         SosEvent saved = sosEventRepository.save(event);
@@ -61,10 +56,10 @@ public class SosService {
                 .vehicleModel(currentUser.getVehicleModel())
                 .lat(request.getLat())
                 .lng(request.getLng())
-                .emergencyContactName(saved.getEmergencyContactName())
-                .emergencyContactPhone(saved.getEmergencyContactPhone())
-                .notes(request.getNotes() != null ? request.getNotes() : "Rider requested immediate group assistance!")
-                .triggeredAt(saved.getTriggeredAt())
+                .emergencyContactName(currentUser.getEmergencyContactName() != null ? currentUser.getEmergencyContactName() : "Next of Kin")
+                .emergencyContactPhone(currentUser.getEmergencyContactPhone() != null ? currentUser.getEmergencyContactPhone() : "+91-9988776655")
+                .notes(saved.getNotes())
+                .triggeredAt(saved.getCreatedAt())
                 .build();
 
         // Broadcast high-priority SOS alert over STOMP WebSocket channel: /topic/ride-groups/{groupId}/sos-alert
@@ -73,17 +68,16 @@ public class SosService {
         return alert;
     }
 
-    @Transactional
-    public SosEvent resolveSos(Long sosEventId) {
+    public SosEvent resolveSos(String sosEventId) {
         SosEvent event = sosEventRepository.findById(sosEventId)
                 .orElseThrow(() -> new RuntimeException("SOS Event not found: " + sosEventId));
 
-        event.setStatus(SosStatus.RESOLVED);
+        event.setResolved(true);
         event.setResolvedAt(LocalDateTime.now());
         return sosEventRepository.save(event);
     }
 
-    public List<SosEvent> getActiveSosEvents(Long rideGroupId) {
-        return sosEventRepository.findByRideGroupIdAndStatus(rideGroupId, SosStatus.ACTIVE);
+    public List<SosEvent> getActiveSosEvents(String rideGroupId) {
+        return sosEventRepository.findByRideGroupIdAndResolved(rideGroupId, false);
     }
 }

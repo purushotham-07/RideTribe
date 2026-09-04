@@ -12,16 +12,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LocationUpdateDTO {
-    private Long userId;
+    private String userId;
     private String userName;
     private String avatarUrl;
     private String vehicleModel;
-    private Long rideGroupId;
+    private String rideGroupId;
     private Double lat;
     private Double lng;
-    private Double speed;      // in km/h
-    private Double heading;    // degrees (0-360)
-    private Double battery;    // 0-100%
+    private Double speed;
+    private Double heading;
+    private Double battery;
     private Boolean onMyWay;
     private Boolean isLead;
     private Double distanceFromLeadKm;

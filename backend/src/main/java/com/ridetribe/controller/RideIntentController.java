@@ -34,7 +34,7 @@ public class RideIntentController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<RideIntentDTO> cancelRideIntent(@PathVariable("id") Long id) {
+    public ResponseEntity<RideIntentDTO> cancelRideIntent(@PathVariable("id") String id) {
         return ResponseEntity.ok(rideIntentService.cancelIntent(id));
     }
 }

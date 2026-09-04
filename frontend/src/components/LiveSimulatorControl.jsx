@@ -90,11 +90,11 @@ export default function LiveSimulatorControl({
   };
 
   return (
-    <div className="p-3.5 rounded-2xl bg-white dark:bg-[#111726] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+    <div className="p-3.5 rounded-2xl bg-card border border-border shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
       <div className="flex items-center space-x-2">
-        <span className={`w-2.5 h-2.5 rounded-full ${isRunning ? 'bg-emerald-500 animate-ping' : 'bg-slate-400'}`}></span>
-        <span className="font-bold text-slate-900 dark:text-white">Convoy Telemetry Simulator</span>
-        <span className="text-slate-500 dark:text-slate-400 text-[11px] hidden md:inline">
+        <span className={`w-2.5 h-2.5 rounded-full ${isRunning ? 'bg-emerald-500 animate-ping' : 'bg-muted-foreground'}`}></span>
+        <span className="font-semibold text-foreground">Convoy Telemetry Simulator</span>
+        <span className="text-muted-foreground text-[11px] hidden md:inline">
           (Simulate highway GPS coordinates, lag regroup alert, and SOS triggers)
         </span>
       </div>
@@ -102,10 +102,10 @@ export default function LiveSimulatorControl({
       <div className="flex items-center space-x-2">
         <button
           onClick={toggleSimulation}
-          className={`py-2 px-3.5 rounded-xl font-bold text-xs border flex items-center space-x-1.5 transition-colors ${
+          className={`py-2 px-4 rounded-full font-semibold text-xs border flex items-center space-x-1.5 transition-colors ${
             isRunning
               ? 'bg-amber-500/15 text-amber-500 border-amber-500/30'
-              : 'bg-slate-900 text-white dark:bg-amber-500 dark:text-slate-950 border-transparent hover:opacity-90'
+              : 'bg-foreground text-background border-transparent hover:opacity-90'
           }`}
         >
           {isRunning ? <Pause className="w-3.5 h-3.5 fill-current" /> : <Play className="w-3.5 h-3.5 fill-current" />}
@@ -114,10 +114,10 @@ export default function LiveSimulatorControl({
 
         <button
           onClick={handleLagToggle}
-          className={`py-2 px-3.5 rounded-xl font-bold text-xs border flex items-center space-x-1.5 transition-colors ${
+          className={`py-2 px-4 rounded-full font-medium text-xs border flex items-center space-x-1.5 transition-colors ${
             simulatedLag
-              ? 'bg-rose-50 text-rose-800 border-rose-300 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-900'
-              : 'bg-slate-50 dark:bg-[#172033] text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700/80 hover:bg-slate-100 dark:hover:bg-[#1e293b]'
+              ? 'bg-rose-500/10 text-rose-500 border-rose-500/30'
+              : 'bg-secondary/60 text-foreground border-border hover:bg-secondary'
           }`}
           title="Simulate 1 rider falling >2km behind"
         >
@@ -127,7 +127,7 @@ export default function LiveSimulatorControl({
 
         <button
           onClick={handleReset}
-          className="p-2 rounded-xl border border-slate-300 dark:border-slate-700/80 text-slate-500 hover:text-slate-900 dark:hover:text-white bg-white dark:bg-[#172033]"
+          className="p-2 rounded-full border border-border text-muted-foreground hover:text-foreground bg-secondary/60 hover:bg-secondary transition-colors"
           title="Reset positions"
         >
           <RotateCcw className="w-3.5 h-3.5" />

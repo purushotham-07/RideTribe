@@ -3,55 +3,134 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 0 0% 100%;        /* #ffffff Pitch Pure White */
+    --foreground: 240 10% 3.9%;     /* #09090b Shadcn Crisp Charcoal */
+    --card: 0 0% 100%;              /* #ffffff Clean White Card Surface */
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 13 88% 54%;          /* #f04f23 Signal Road Orange */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 4.8% 95.9%;    /* #f4f4f5 */
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;        /* #f4f4f5 */
+    --muted-foreground: 240 3.8% 46.1%; /* #71717a */
+    --accent: 13 88% 54%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 347 77% 50%;     /* #e11d48 Crimson SOS */
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5.9% 90%;         /* #e4e4e7 Clean Hairline Border */
+    --input: 240 5.9% 90%;
+    --ring: 13 88% 54%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 0 0% 0%;          /* #000000 Pitch Black Canvas */
+    --foreground: 0 0% 98%;         /* #fafafa Clean Crisp Text */
+    --card: 240 10% 3.9%;           /* #09090b Shadcn Zinc Surface */
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;        /* #09090b Elevated Popover */
+    --popover-foreground: 0 0% 98%;
+    --primary: 13 88% 54%;          /* #f04f23 Signal Road Orange */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 3.7% 15.9%;    /* #27272a */
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;        /* #27272a */
+    --muted-foreground: 240 5% 64.9%; /* #a1a1aa Crisp Muted */
+    --accent: 13 88% 54%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 347 77% 50%;     /* #e11d48 Crimson SOS */
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 3.7% 15.9%;       /* #27272a Dark Hairline Border */
+    --input: 240 3.7% 15.9%;
+    --ring: 13 88% 54%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }
 
-/* Custom minimal scrollbar */
+/* Restrained Minimal Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
+  background: #d1d5db;
+  border-radius: 9999px;
 }
 .dark ::-webkit-scrollbar-thumb {
-  background: #334155;
+  background: #262930;
 }
 .dark ::-webkit-scrollbar-thumb:hover {
-  background: #475569;
+  background: #373c46;
 }
 
-/* Clean Leaflet Map */
+/* Map Containers & 60+ FPS Hardware Acceleration */
 .leaflet-container {
   font-family: inherit !important;
   z-index: 1;
-  background-color: #0b0f19 !important;
+  background-color: #0c0d10 !important;
+  contain: layout paint;
+}
+
+.leaflet-tile,
+.leaflet-pane,
+.leaflet-marker-icon,
+.leaflet-zoom-animated {
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* Glassmorphism Surfaces */
+.glass-hud {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(228, 228, 231, 0.8);
+}
+.dark .glass-hud {
+  background: rgba(9, 9, 11, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(39, 39, 42, 0.8);
 }
 
 /* Dark Mode Leaflet Popups */
 .dark .leaflet-popup-content-wrapper,
 .dark .leaflet-popup-tip {
-  background: #111827 !important;
-  color: #f3f4f6 !important;
-  border: 1px solid #374151;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
-  border-radius: 12px !important;
+  background: #09090b !important;
+  color: #fafafa !important;
+  border: 1px solid #27272a;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8) !important;
+  border-radius: 6px !important;
 }
 .dark .leaflet-popup-close-button {
-  color: #9ca3af !important;
+  color: #a1a1aa !important;
 }
 .leaflet-popup-content-wrapper {
-  border-radius: 12px !important;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.15) !important;
+  border-radius: 6px !important;
 }
 
-.custom-rider-icon {
-  background: transparent;
-  border: none;
+/* Shadcn Hero Radial Spotlight */
+.bg-radial-hero {
+  background-image: radial-gradient(circle 600px at 50% -100px, rgba(255, 255, 255, 0.08), transparent 80%);
+}
+html:not(.dark) .bg-radial-hero {
+  background-image: radial-gradient(circle 600px at 50% -100px, rgba(0, 0, 0, 0.04), transparent 80%);
 }

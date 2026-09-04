@@ -13,11 +13,11 @@ import java.util.Map;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GroupLocationsDTO {
-    private Long rideGroupId;
+    private String rideGroupId;
     private Double centroidLat;
     private Double centroidLng;
-    private Long leadUserId;
-    private Map<Long, LocationUpdateDTO> locations;
+    private String leadUserId;
+    private Map<String, LocationUpdateDTO> locations;
     @Builder.Default
     private LocalDateTime timestamp = LocalDateTime.now();
 }

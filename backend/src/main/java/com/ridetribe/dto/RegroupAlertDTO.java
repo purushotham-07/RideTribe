@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegroupAlertDTO {
-    private Long rideGroupId;
-    private Long laggingUserId;
+    private String rideGroupId;
+    private String laggingUserId;
     private String laggingUserName;
     private String laggingUserAvatar;
     private Double laggingLat;

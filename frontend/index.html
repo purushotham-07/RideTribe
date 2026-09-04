@@ -1,9 +1,25 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RideTribe — Weekend Group Ride Matcher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#090d16" />
+    <meta name="description" content="RideTribe — Real-time group ride & community convoy platform for motorcycle and car touring enthusiasts." />
+    <meta name="keywords" content="riding group, motorcycle convoy, bike ride bangalore, nandi hills ride, coorg road trip, convoy telemetry" />
+    <meta name="author" content="RideTribe" />
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="RideTribe — Real-Time Group Ride & Convoy Platform" />
+    <meta property="og:description" content="Discover weekend group rides, track real-time convoy GPS telemetry, plan turn-by-turn road routes, and connect with ride mates." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=1200&auto=format&fit=crop&q=80" />
+
+    <title>RideTribe — Real-Time Convoy & Group Tour Platform</title>
+
+    <!-- App Favicon & Apple Mobile Icons -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2338bdf8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='18.5' cy='17.5' r='3.5'/%3E%3Ccircle cx='5.5' cy='17.5' r='3.5'/%3E%3Ccircle cx='15' cy='5' r='1'/%3E%3Cpath d='M12 17.5V14l-3-3 4-3 2 3h2'/%3E%3C/svg%3E" />
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23090d16'%3E%3Ccircle cx='18.5' cy='17.5' r='3.5' stroke='%2338bdf8' stroke-width='2' fill='none'/%3E%3Ccircle cx='5.5' cy='17.5' r='3.5' stroke='%2338bdf8' stroke-width='2' fill='none'/%3E%3Cpath d='M12 17.5V14l-3-3 4-3 2 3h2' stroke='%2338bdf8' stroke-width='2' fill='none'/%3E%3C/svg%3E" />
+
     <!-- Leaflet CSS -->
     <link
       rel="stylesheet"
@@ -11,14 +27,16 @@
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
-    <!-- Clean Inter font -->
+
+    <!-- Google Fonts: Geist (Sans) + Geist Mono (Signature shadcn/ui typography) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@100..900&family=Geist+Mono:wght@100..900&display=swap" rel="stylesheet">
+
     <!-- Google Identity Services (GIS) -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
   </head>
-  <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 min-h-screen transition-colors duration-150 antialiased">
+  <body class="bg-white dark:bg-black text-zinc-950 dark:text-zinc-50 min-h-screen selection:bg-zinc-900 selection:text-white dark:selection:bg-zinc-100 dark:selection:text-black font-sans antialiased overflow-x-hidden">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

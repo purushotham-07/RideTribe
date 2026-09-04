@@ -3,16 +3,16 @@ package com.ridetribe.repository;
 import com.ridetribe.model.RideIntent;
 import com.ridetribe.model.RideIntentStatus;
 import com.ridetribe.model.TravelMode;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface RideIntentRepository extends JpaRepository<RideIntent, Long> {
+public interface RideIntentRepository extends MongoRepository<RideIntent, String> {
 
-    List<RideIntent> findByUserIdOrderByCreatedAtDesc(Long userId);
+    List<RideIntent> findByUserIdOrderByCreatedAtDesc(String userId);
 
     List<RideIntent> findByStatus(RideIntentStatus status);
 

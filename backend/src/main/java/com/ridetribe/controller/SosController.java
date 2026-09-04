@@ -28,12 +28,12 @@ public class SosController {
     }
 
     @PostMapping("/{id}/resolve")
-    public ResponseEntity<SosEvent> resolveSos(@PathVariable("id") Long id) {
+    public ResponseEntity<SosEvent> resolveSos(@PathVariable("id") String id) {
         return ResponseEntity.ok(sosService.resolveSos(id));
     }
 
     @GetMapping("/group/{groupId}/active")
-    public ResponseEntity<List<SosEvent>> getActiveSos(@PathVariable("groupId") Long groupId) {
+    public ResponseEntity<List<SosEvent>> getActiveSos(@PathVariable("groupId") String groupId) {
         return ResponseEntity.ok(sosService.getActiveSosEvents(groupId));
     }
 
@@ -43,7 +43,7 @@ public class SosController {
      */
     @MessageMapping("/ride-groups/{groupId}/sos")
     public void handleWebSocketSos(
-            @DestinationVariable("groupId") Long groupId,
+            @DestinationVariable("groupId") String groupId,
             @Payload SosTriggerRequest request) {
         request.setRideGroupId(groupId);
         sosService.triggerSos(request);
